@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/layout.html}">
+>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+
+        <div class="container-fluid p-4">
+            <!-- Cards -->
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-2">Количество заказов</h5>
+                                <i class="ti ti-basket"></i>
+                            </div>
+                            <h6 class="card-subtitle mb-2 text-muted" id="total-orders">21,324</h6>
+                            <p class="card-text" id="today-orders">+2,031</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-2">Общая сумма продаж</h5>
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                            <h6 class="card-subtitle mb-2 text-muted" id="total-sales">$221,324.50</h6>
+                            <p class="card-text" id="today-sales">+$2,201</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-2">Всего пользователей</h5>
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <h6 class="card-subtitle mb-2 text-muted" id="total-customers">16,703</h6>
+                            <p class="card-text" id="today-customers">+3,392</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-2">Активных пользователей</h5>
+                                <i class="bi bi-person-check"></i>
+                            </div>
+                            <h6 class="card-subtitle mb-2 text-muted" id="active-users">12.8%</h6>
+                            <p class="card-text" id="changes-last-week">-1.22%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <script th:inline="javascript">
+                $(document).ready(function() {
+                    function fetchData() {
+                        $.ajax({
+                            url: 'orders',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#total-orders').text(data);
+                            },
+                            error: function() {
+                                $('#total-orders').text('0');
+                            }
+                        });
+                        $.ajax({
+                            url: "orders/today",
+                            method: 'GET',
+                            success: function(data) {
+                                $('#today-orders').text(data);
+                            },
+                            error: function() {
+                                $('#today-orders').text('0');
+                            }
+                        });
+                        $.ajax({
+                            url: 'sales/total',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#total-sales').text('$' + data);
+                            },
+                            error: function() {
+                                $('#total-sales').text('$0');
+                            }
+                        });
+                        $.ajax({
+                            url: 'sales/today',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#today-sales').text('+$' + data);
+                            },
+                            error: function() {
+                                $('#today-sales').text('+$0');
+                            }
+                        });
+                        $.ajax({
+                            url: 'customers',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#total-customers').text(data);
+                            },
+                            error: function() {
+                                $('#total-customers').text('0');
+                            }
+                        });
+                        $.ajax({
+                            url: 'customers/today',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#today-customers').text('+' + data);
+                            },
+                            error: function() {
+                                $('#today-customers').text('+0');
+                            }
+                        });
+                        $.ajax({
+                            url: 'customers/active/last-month',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#active-users').text(data + '%');
+                            },
+                            error: function() {
+                                $('#active-users').text('0%');
+                            }
+
+                        });
+                        $.ajax({
+                            url: 'customers/changes/last-week',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#changes-last-week').text((data > 0 ? '+' : '') + data + '%');
+                            },
+                            error: function() {
+                                $('#changes-last-week').text('0%');
+                            }
+                        });
+                    }
+
+                    fetchData();
+
+                    setInterval(fetchData, 30000);
+                });
+            </script>
+
+
+            <!-- Charts -->
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <h5 class="card-title">График продаж</h5>
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card p-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Топ 3 продукта</h5>
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                $(document).ready(function() {
+                    const quantity = 5;
+                    const months = 6;
+
+                    $.ajax({
+                        url: 'sales/chart',
+                        type: 'GET',
+                        data: {
+                            quantity: quantity,
+                            months: months
+                        },
+                        success: function(data) {
+                            const labels = [];
+                            const currentMonth = new Date().getMonth() + 1;
+                            for (let i = months - 1; i >= 0; i--) {
+                                const date = new Date();
+                                date.setMonth(currentMonth - i - 1);
+                                labels.push(date.toLocaleString('default', { month: 'short' })); // Короткое название месяца
+                            }
+
+                            // Создание datasets для каждого продукта
+                            const datasets = [];
+                            Object.keys(data).forEach(function(productName) {
+                                datasets.push({
+                                    label: productName,
+                                    data: data[productName],  // Данные для каждого продукта
+                                    borderColor: getRandomColor(),  // Случайный цвет для графика
+                                    borderWidth: 1
+                                });
+                            });
+
+                            // Обновление графика с новыми данными
+                            const salesCtx = document.getElementById('salesChart').getContext('2d');
+                            const salesChart = new Chart(salesCtx, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,  // Метки (названия месяцев)
+                                    datasets: datasets  // Наборы данных для графика
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        },
+                        error: function(error) {
+                            console.error('Error fetching sales chart:', error);
+                        }
+                    });
+                });
+
+                // Функция для генерации случайного цвета для графика
+                function getRandomColor() {
+                    const letters = '0123456789ABCDEF';
+                    let color = '#';
+                    for (let i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                }
+
+                $(document).ready(function() {
+                    $.ajax({
+                        url: 'products/top',
+                        type: 'GET',
+                        success: function(data) {
+                            const labels = data.map(product => product.name);
+                            const percentages = data.map(product => product.percentage);
+                            const backgroundColors = labels.map(() => getRandomColor());
+                            const ctx = document.getElementById('topProductsChart').getContext('2d');
+                            const topProductsChart = new Chart(ctx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        data: percentages,
+                                        backgroundColor: backgroundColors,
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(context) {
+                                                    let label = context.label || '';
+                                                    if (label) {
+                                                        label += ': ';
+                                                    }
+                                                    if (context.raw !== null) {
+                                                        label += Math.round(context.raw * 100) / 100 + '%';
+                                                    }
+                                                    return label;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        },
+                        error: function(error) {
+                            console.error('Error fetching top products:', error);
+                        }
+                    });
+                });
+            </script>
+        </div>
+
+
+
+    </div>
+    <!-- Recent Orders Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Последние заказы</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr id="table-head">
+                                <td class="text-center">ID</td>
+                                <td class="text-center">Имя</td>
+                                <td class="text-center">Номер телефона</td>
+                                <td class="text-center">Дата создания</td>
+                                <td class="text-center">Сумма заказа</td>
+                                <td class="text-center">Дата готовности</td>
+                                <td class="text-center">Статус</td>
+                            </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        loadEntities()
+        function loadEntities() {
+            $.ajax({
+                url: 'order/getLastOrdersForStatistics',
+                method: 'GET',
+                success: function (response) {
+                    renderEntitiesTable(response);
+                },
+                error: function (err) {
+                    console.error('Ошибка загрузки сущностей:', err);
+                }
+            });
+        }
+
+        function renderEntitiesTable(orders) {
+            const tableBody = $('#table-body');
+            tableBody.empty();
+
+            orders.forEach(order => {
+                const dateTimeOfCreate = formatDateTime(order.dateTimeOfCreate);
+                const dateTimeOfReady = formatDateTime(order.dateTimeOfReady);
+                const row = `
+                <tr>
+                    <td class="text-center">${order.id}</td>
+                    <td class="text-center">${order.customerDto.name}</td>
+                    <td class="text-center">${order.customerDto.phoneNumber}</td>
+                    <td class="text-center">${dateTimeOfCreate}</td>
+                    <td class="text-center">${order.totalAmount}</td>
+                    <td class="text-center">${dateTimeOfReady}</td>
+                    <td class="text-center">${order.status}</td>
+
+                </tr>`;
+                tableBody.append(row);
+            });
+        }
+
+        function formatDateTime(dateTimeArray) {
+            const [year, month, day, hour, minute, second] = dateTimeArray;
+            const dateTimeString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+            return new Date(dateTimeString).toLocaleString('ru-RU', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            });
+        }
+    </script>
+    <script th:src="@{/assets/vendor/js/bootstrap.js}"></script>
+</div>
+</body>
+</html>

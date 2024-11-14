@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template/layout.html" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
+<body>
+<div layout:fragment="content">
+    <!-- Profile Editing Form -->
+    <div class="container mt-4">
+        <div class="d-flex flex-row justify-content-center align-items-center">
+            <h4 class="fw-bold pt-3" >Редактирование профиля</h4>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form id="profile-form">
+                    <div class="row">
+                        <div class="col mb-3">
+                            <input type="hidden" id="id-user">
+                            <label for="nameWithTitle" class="form-label">Name</label>
+                            <input
+                                    type="text"
+                                    id="nameWithTitle"
+                                    class="form-control"
+                                    placeholder="Enter Name"
+                                    value="John Doe"
+                            />
+                            <div id="nameError" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                    type="email"
+                                    id="email"
+                                    class="form-control"
+                                    placeholder="Enter Email"
+                                    value="john.doe@example.com"
+                            />
+                            <div id="emailError" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col mb-0">
+                            <label for="password" class="form-label">Пароль</label>
+                            <input
+                                    type="password"
+                                    id="password"
+                                    class="form-control"
+                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                            />
+                            <div id="passwordError" class="text-danger"></div>
+                        </div>
+                        <div class="col mb-0">
+                            <label for="passwordRepeat" class="form-label">Повторите пароль</label>
+                            <input
+                                    type="password"
+                                    id="passwordRepeat"
+                                    class="form-control"
+                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                            />
+                            <div id="passwordRepeatError" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="role" class="form-label">Роль</label>
+                            <select id="role"
+                                    class="form-select form-select"
+                                    data-allow-clear="true"
+                                    name="role">
+                            </select>
+                            <div id="roleError" class="text-danger"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary" id="cancel-profile-btn">Cancel</button>
+                <button type="button" class="btn btn-primary ms-2" id="save-profile-btn">Save changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const profileForm = $('#profile-form');
+            const saveProfileBtn = $('#save-profile-btn');
+            const cancelProfileBtn = $('#cancel-profile-btn');
+            getRoles();
+
+            $.ajax({
+                url: '[[@{/profile/profile}]]',
+                type: 'GET',
+                success: function(user) {
+                    console.log('Получен пользователь:', user);
+                    $('#id-user').val(user.id);
+                    $('#nameWithTitle').val(user.name);
+                    $('#email').val(user.email);
+                    $('#role').val(user.role);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ошибка при получении данных пользователя:', error);
+                }
+            });
+
+            // Обработчик нажатия на кнопку "Save changes"
+            saveProfileBtn.on('click', function() {
+                const userId = $('#id-user').val(); // Если нужен ID пользователя
+                const userData = {
+                    id: userId,
+                    name: $('#nameWithTitle').val(),
+                    email: $('#email').val(),
+                    password: $('#password').val(),
+                    role: $('#role').val()
+                };
+
+
+
+                $.ajax({
+                    url: `profile`,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(userData),
+                    success: function() {
+                        showToast('success', 'Успех', 'Профиль успешно обновлен');
+                        location.reload();
+                    },
+                    error: function(errors) {
+                        clearValidationErrors();
+                        console.log(errors);
+                        validateFormErrors(errors);
+                    }
+                });
+            });
+
+            function clearValidationErrors() {
+                $('#nameError').text('');
+                $('#emailError').text('');
+                $('#passwordError').text('');
+                $('#roleError').text('');
+            }
+
+            function handleValidationErrors(errors) {
+                if (errors.name) {
+                    $('#nameError').text(errors.name);
+                }
+                if (errors.email) {
+                    $('#emailError').text(errors.email);
+                }
+                if (errors.password) {
+                    $('#passwordError').text(errors.password);
+                }
+                if (errors.role) {
+                    $('#roleError').text(errors.role);
+                }
+            }
+
+            // Обработчик для кнопки "Cancel"
+            cancelProfileBtn.on('click', function() {
+                location.reload();
+            });
+            function getRoles() {
+                $.ajax({
+                    url: '[[@{/user/roles}]]',
+                    method: 'GET',
+                    success: function (response) {
+                        response.forEach(role => {
+                            $('#role').append(`<option value="${role}">${role}</option>`);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching roles:', error);
+                    }
+                });
+            }
+
+            function validateFormErrors(error) {
+                const errorData = error.responseJSON;
+                for (const field in errorData) {
+                    const errorMessage = errorData[field];
+                    $(`#${field}Error`).text(errorMessage);
+                }
+            }
+
+            function clearFormErrors() {
+                $('.text-danger').html('');
+            }
+        });
+
+    </script>
+
+    <script th:src="@{/assets/vendor/js/bootstrap.js}"></script>
+</div>
+
+
+</body>
+
+
+</html>
