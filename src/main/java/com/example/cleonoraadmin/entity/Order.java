@@ -13,9 +13,7 @@ import java.time.LocalDate;
  - duration: Duration
  - price: BigDecimal
  - status: OrderStatus
- - user: AppUser
- - orderServices: List<OrderService>
- - workdays: List<Workday>
+ - customer: Customer
  --
  - getId(): Long
  - setId(Long id)
@@ -27,12 +25,8 @@ import java.time.LocalDate;
  - setPrice(BigDecimal price)
  - getStatus(): OrderStatus
  - setStatus(OrderStatus status)
- - getUser(): AppUser
- - setUser(AppUser user)
- - getOrderServices(): List<OrderService>
- - setOrderServices(List<OrderService> orderServices)
- - getWorkdays(): List<Workday>
- - setWorkdays(List<Workday> workdays)
+ - getCustomer(): Customer
+ - setCustomer(Customer customer)
 
  */
 

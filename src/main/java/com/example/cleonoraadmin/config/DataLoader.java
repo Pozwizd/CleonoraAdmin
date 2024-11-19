@@ -20,6 +20,7 @@ public class DataLoader {
     public void loadUsers() {
         if (adminUserService.findByUsername("admin@gmail.com") == null){
             AdminUser adminUser = new AdminUser();
+            
             adminUser.setName("Admin");
             adminUser.setEmail("admin@gmail.com");
             adminUser.setPhoneNumber(faker.phoneNumber().cellPhone());
@@ -27,7 +28,7 @@ public class DataLoader {
             adminUserService.saveNewUser(adminUser);
         }
 
-        while (!adminUserService.ifUserMoreThan(5)){
+        while (!adminUserService.ifUserMoreThan(100)){
             AdminUser adminUser = new AdminUser();
             adminUser.setName(faker.name().fullName());
             adminUser.setSurname(faker.name().lastName());

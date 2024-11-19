@@ -7,6 +7,7 @@ server:
 
 spring:
 
+
   application:
     name: Cleonora
 
@@ -14,6 +15,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: "0000"
+
   jpa:
     show-sql: true
     properties:
@@ -22,6 +24,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+
   servlet:
     multipart:
       enabled: true
@@ -29,19 +32,15 @@ spring:
       max-file-size: 200MB
       max-request-size: 215MB
 
-
 logging:
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
-
   level:
-    file: "INFO"
-
+    file: INFO
   file:
     name: "/home/slj/projects/Cleonora-R.Miahkykh/logs/CleonoraDocker.log"
 
 upload:
   folder:
     path: "/home/slj/projects/Cleonora-R.Miahkykh/uploads"
-

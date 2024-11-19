@@ -6,7 +6,37 @@ import lombok.Data;
 
 import java.util.List;
 
-
+/**
+ Customer
+ - id: Long
+ - name: String
+ - surname: String
+ - email: String
+ - phoneNumber: String
+ - password: String
+ - isActive: Boolean
+ - orders: List<Order>
+ - deleted: Boolean
+ --
+ - getId(): Long
+ - setId(Long id)
+ - getName(): String
+ - setName(String name)
+ - getSurname(): String
+ - setSurname(String surname)
+ - getEmail(): String
+ - setEmail(String email)
+ - getPhoneNumber(): String
+ - setPhoneNumber(String phoneNumber)
+ - getPassword(): String
+ - setPassword(String password)
+ - getIsActive(): Boolean
+ - setIsActive(Boolean isActive)
+ - getOrders(): List<Order>
+ - setOrders(List<Order> orders)
+ - getDeleted(): Boolean
+ - setDeleted(Boolean deleted)
+ */
 @Entity
 @Data
 public class Customer {
@@ -27,11 +57,10 @@ public class Customer {
 
     private Boolean isActive = true;
 
-    @Enumerated(EnumType.STRING)
-    private AdminRole role = AdminRole.ADMIN;
-
     @OneToMany(mappedBy = "customer")
     private List<Order> orders;
+
+    private Boolean deleted = false;
 
 
 }

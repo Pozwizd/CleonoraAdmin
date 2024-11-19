@@ -28,6 +28,7 @@ import java.time.LocalTime;
  -setOrder(Order order)
  -getService(): Service
  -setService(Service service)
+
  */
 
 @Entity

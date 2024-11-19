@@ -59,4 +59,13 @@
 
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script th:src="@{/assets/js/config.js}"></script>
+    <style>
+        #loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1050; /* Выше Bootstrap модальных окон */
+        }
+    </style>
 </head>

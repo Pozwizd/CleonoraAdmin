@@ -3,6 +3,7 @@ package com.example.cleonoraadmin.service;
 
 import com.example.cleonoraadmin.entity.AdminUser;
 import com.example.cleonoraadmin.mapper.AdminUserMapper;
+import com.example.cleonoraadmin.model.AdminUserRequest;
 import com.example.cleonoraadmin.model.AdminUserResponse;
 import com.example.cleonoraadmin.repository.AdminUserRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.example.cleonoraadmin.specification.AdminUserSpecification;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -49,6 +52,36 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
     public boolean ifUserMoreThan(int i) {
         return adminUserRepository.count() > i;
     }
+
+    public Optional<AdminUser> getAdminUserById(Long id) {
+        return adminUserRepository.findById(id);
+    }
+
+    @Override
+    public AdminUserResponse saveNewUserFromRequest(AdminUserRequest adminUserRequest) {
+        AdminUser adminUser = adminUserMapper.adminUserResponsetoEntity(adminUserRequest);
+
+        return adminUserMapper.adminUsertoResponse(saveNewUser(adminUser));
+    }
+
+    @Override
+    public AdminUserResponse updateAdminUser(Long id, AdminUserRequest adminUserRequest) {
+        AdminUser adminUser = adminUserMapper.adminUserResponsetoEntity(adminUserRequest);
+        adminUser.setId(id);
+        return adminUserMapper.adminUsertoResponse(saveNewUser(adminUser));
+    }
+
+    @Override
+    public boolean deleteAdminUserById(Long id) {
+        try {
+            adminUserRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error("Ошибка при удалении пользователя: {}", e.getMessage(), e);
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
