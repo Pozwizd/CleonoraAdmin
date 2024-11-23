@@ -23,6 +23,8 @@ public class AdminUser implements UserDetails {
 
     private String surname;
 
+    private String avatar;
+
     private String email;
 
     private String phoneNumber;

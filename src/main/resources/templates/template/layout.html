@@ -53,7 +53,7 @@
                   />
                 </svg>
               </span>
-                    <span class="app-brand-text demo menu-text fw-bold" th:text="${appName}">Coffee Store</span>
+                    <span class="app-brand-text demo menu-text fw-bold" th:text="${appName}">appName</span>
                 </a>
 
                 <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -112,16 +112,10 @@
                         <div>Заказы</div>
                     </a>
                 </li>
-                <li th:classappend="${pageActive == 'delivery' ? 'active' : ''}" class="menu-item">
-                    <a th:href="@{/delivery}" class="menu-link">
-                        <i class="menu-icon tf-icons ti ti-truck"></i>
-                        <div>Доставка</div>
-                    </a>
-                </li>
-                <li th:classappend="${pageActive == 'locations' ? 'active' : ''}" class="menu-item" >
-                    <a th:href="@{/location}" class="menu-link">
-                        <i class="menu-icon tf-icons ti ti-map-pin"></i>
-                        <div>Локации</div>
+                <li th:classappend="${pageActive == 'categories' ? 'active' : ''}" class="menu-item" >
+                    <a th:href="@{/category}" class="menu-link">
+                        <i class="menu-icon tf-icons ti ti-app-window"></i>
+                        <div>Категории</div>
                     </a>
                 </li>
                 <li class="menu-item" th:classappend="${pageActive == 'users' ? 'active' : ''}">
@@ -165,7 +159,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="dropdown-item" th:href="@{/profile/}">
+                                    <a class="dropdown-item" th:href="@{/admin/profile}">
                                         <div class="d-flex">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="avatar avatar-online">
@@ -187,15 +181,11 @@
                                 </li>
                             </ul>
                         </li>
-                        <!--/ User -->
                     </ul>
 
                 </div>
             </nav>
 
-
-
-            <!-- / Navbar -->
             <div layout:replace="~{template/fragments/scripts}">
             </div>
             <!-- Content wrapper -->

@@ -1,5 +1,6 @@
 package com.example.cleonoraadmin.specification;
 
+import com.example.cleonoraadmin.entity.AdminRole;
 import com.example.cleonoraadmin.entity.AdminUser;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -28,4 +29,11 @@ public interface AdminUserSpecification {
             return criteriaBuilder.equal(root.get("isActive"), true);
         };
     }
+
+    static Specification<AdminUser> getAllExceptRole(AdminRole role) {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.notEqual(root.get("role"), role);
+        };
+    }
+
 }

@@ -1,11 +1,16 @@
-package com.example.cleonoraadmin.service;
+package com.example.cleonoraadmin.service.imp;
 
 
+import com.example.cleonoraadmin.UploadFile;
+import com.example.cleonoraadmin.entity.AdminRole;
 import com.example.cleonoraadmin.entity.AdminUser;
 import com.example.cleonoraadmin.mapper.AdminUserMapper;
-import com.example.cleonoraadmin.model.AdminUserRequest;
-import com.example.cleonoraadmin.model.AdminUserResponse;
+import com.example.cleonoraadmin.model.admin.AdminUserProfileRequest;
+import com.example.cleonoraadmin.model.admin.AdminUserProfileResponse;
+import com.example.cleonoraadmin.model.admin.AdminUserRequest;
+import com.example.cleonoraadmin.model.admin.AdminUserResponse;
 import com.example.cleonoraadmin.repository.AdminUserRepository;
+import com.example.cleonoraadmin.service.AdminUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +30,7 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
 
     private final AdminUserRepository adminUserRepository;
     private final AdminUserMapper adminUserMapper;
+    private final UploadFile uploadFile;
 
 
     @Override
@@ -44,7 +50,7 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
 
         return adminUserMapper.adminUsertoResponsePage(adminUserRepository.findAll(
                 AdminUserSpecification.byActive()
-                        .and(AdminUserSpecification.search(search)),
+                        .and(AdminUserSpecification.search(search).and(AdminUserSpecification.getAllExceptRole(AdminRole.ADMIN))),
                 pageRequest));
     }
 
@@ -80,6 +86,18 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
             return false;
         }
         return true;
+    }
+
+    @Override
+    public AdminUserProfileResponse getAdminUserProfile(String username) {
+        return adminUserMapper.adminUserToProfileResponse(findByUsername(username));
+    }
+
+
+
+    @Override
+    public AdminUserProfileResponse updateAdminUserProfile(AdminUserProfileRequest adminUserRequest) {
+        return adminUserMapper.adminUserToProfileResponse(saveNewUser(adminUserMapper.adminUserProfileRequestToEntity(adminUserRequest, uploadFile)));
     }
 
 

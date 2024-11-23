@@ -138,22 +138,22 @@ if (document.getElementById('layout-menu')) {
   // Internationalization (Language Dropdown)
   // ---------------------------------------
 
-  // if (typeof i18next !== 'undefined' && typeof i18NextHttpBackend !== 'undefined') {
-  //   i18next
-  //     .use(i18NextHttpBackend)
-  //     .init({
-  //       lng: 'en',
-  //       debug: false,
-  //       fallbackLng: 'en',
-  //       backend: {
-  //         loadPath: assetsPath + 'json/locales/{{lng}}.json'
-  //       },
-  //       returnObjects: true
-  //     })
-  //     .then(function (t) {
-  //       localize();
-  //     });
-  // }
+  if (typeof i18next !== 'undefined' && typeof i18NextHttpBackend !== 'undefined') {
+    i18next
+      .use(i18NextHttpBackend)
+      .init({
+        lng: 'en',
+        debug: false,
+        fallbackLng: 'en',
+        backend: {
+          loadPath: assetsPath + 'json/locales/{{lng}}.json'
+        },
+        returnObjects: true
+      })
+      .then(function (t) {
+        localize();
+      });
+  }
 
   let languageDropdown = document.getElementsByClassName('dropdown-language');
 

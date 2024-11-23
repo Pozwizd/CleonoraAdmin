@@ -4,10 +4,11 @@
       layout:decorate="template/layout.html">
 
 <body>
+
 <div layout:fragment="content">
 
     <div class="d-flex flex-row justify-content-center align-items-center">
-        <h4 class="fw-bold pt-3">Пользователи</h4>
+        <h4 class="fw-bold pt-3">Категории</h4>
     </div>
 
     <div class="card" id="card-block">
@@ -22,7 +23,7 @@
                 </div>
             </div>
             <div class="d-flex ms-auto">
-                <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#entityModal">
+                <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#editCategory">
                     <i class="ti ti-plus"></i>
                 </button>
             </div>
@@ -35,9 +36,8 @@
                         <thead>
                         <tr id="table-head">
                             <th class="text-center">ID</th>
-                            <th class="text-center">Имя Фамилия</th>
-                            <th class="text-center">Почта</th>
-                            <th class="text-center">Права</th>
+                            <th class="text-center">Название</th>
+                            <th class="text-center">Описание</th>
                             <th class="text-center">Действия</th>
                         </tr>
                         </thead>
@@ -69,108 +69,37 @@
             </div>
         </div>
 
-        <!-- Модальное окно для создания/редактирования пользователя -->
-        <div class="modal fade" id="editAdminUser" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-simple modal-edit-admin-user">
+        <!-- Модальное окно для создания/редактирования категории -->
+        <div class="modal fade" id="editCategory" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-simple modal-edit-category">
                 <div class="modal-content p-3 p-md-5">
                     <div class="modal-body">
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                         <div class="text-center mb-4">
-                            <h3 class="modal-title mb-2">Создать Пользователя</h3>
-                            <p class="text-muted">Добавление нового пользователя администратора.</p>
+                            <h3 class="modal-title mb-2">Создать Категорию</h3>
                         </div>
-                        <form id="editAdminUserForm" class="row g-3" onsubmit="return false">
-                            <!-- Имя -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserName">Имя</label>
+                        <form id="editCategoryForm" class="row g-3" onsubmit="return false">
+                            <!-- Название -->
+                            <div class="col-12">
+                                <label class="form-label" for="categoryName">Название</label>
                                 <input
                                         type="text"
-                                        id="adminUserName"
+                                        id="categoryName"
                                         name="name"
                                         class="form-control"
-                                        placeholder="Иван"
+                                        placeholder="Название категории"
                                 />
                             </div>
 
-                            <!-- Фамилия -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserSurname">Фамилия</label>
-                                <input
-                                        type="text"
-                                        id="adminUserSurname"
-                                        name="surname"
-                                        class="form-control"
-                                        placeholder="Иванов"
-                                />
-                            </div>
-
-                            <!-- Электронная почта -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserEmail">Электронная почта</label>
-                                <input
-                                        type="email"
-                                        id="adminUserEmail"
-                                        name="email"
-                                        class="form-control"
-                                        placeholder="example@domain.com"
-                                />
-                            </div>
-
-                            <!-- Номер телефона -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserPhone">Номер телефона</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">+7</span>
-                                    <input
-                                            type="text"
-                                            id="adminUserPhone"
-                                            name="phoneNumber"
-                                            class="form-control phone-number-mask"
-                                            placeholder="999 999 9999"
-                                    />
-                                </div>
-                            </div>
-
-                            <!-- Пароль -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserPassword">Пароль</label>
-                                <input
-                                        type="password"
-                                        id="adminUserPassword"
-                                        name="password"
-                                        class="form-control"
-                                        placeholder="••••••••"
-                                />
-                            </div>
-
-                            <!-- Роль -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserRole">Роль</label>
-                                <select
-                                        id="adminUserRole"
-                                        name="role"
-                                        class="form-select"
-                                >
-                                    <option value="" disabled selected>Загрузка ролей...</option>
-                                </select>
-                            </div>
-
-                            <!-- Активен -->
+                            <!-- Описание -->
                             <div class="col-12">
-                                <label class="switch">
-                                    <input
-                                            type="checkbox"
-                                            id="adminUserIsActive"
-                                            name="isActive"
-                                            class="switch-input"
-                                            checked
-                                    />
-                                    <span class="switch-toggle-slider">
-                                        <span class="switch-on"></span>
-                                        <span class="switch-off"></span>
-                                    </span>
-                                    <span class="switch-label">Активен</span>
-                                </label>
+                                <label class="form-label" for="categoryDescription">Описание</label>
+                                <textarea
+                                        id="categoryDescription"
+                                        name="description"
+                                        class="form-control"
+                                        placeholder="Описание категории"
+                                ></textarea>
                             </div>
 
                             <!-- Кнопки отправки и отмены -->
@@ -200,7 +129,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                     </div>
                     <div class="modal-body">
-                        Вы уверены, что хотите удалить этого пользователя?
+                        Вы уверены, что хотите удалить эту категорию?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Отменить</button>
@@ -214,11 +143,11 @@
     <script th:inline="javascript">
 
         const contextPath = '[[@{/}]]'.replaceAll("\"", "");
+
         class APIService {
             constructor(baseURL) {
                 this.baseURL = baseURL;
             }
-
 
             async request(endpoint, options = {}) {
                 const url = `${this.baseURL}${endpoint}`;
@@ -242,43 +171,39 @@
                 }
             }
 
-            async getAllUsers(page = 0, size = 5, search = '') {
+            async getAllCategories(page = 0, size = 5, search = '') {
                 const encodedSearch = encodeURIComponent(search);
-                return this.request(`admin/getAllManagerUsers?page=${page}&size=${size}&search=${encodedSearch}`);
+                return this.request(`category/getAllCategories?page=${page}&size=${size}&search=${encodedSearch}`);
             }
 
-            async getUserById(userId) {
-                return this.request(`admin/${userId}`);
+            async getCategoryById(categoryId) {
+                return this.request(`category/${categoryId}`);
             }
 
-            async createUser(userData) {
-                return this.request('admin/create', {
+            async createCategory(categoryData) {
+                return this.request('category/create', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData),
+                    body: JSON.stringify(categoryData),
                 });
             }
 
-            async updateUser(userId, userData) {
-                return this.request(`admin/${userId}`, {
+            async updateCategory(categoryId, categoryData) {
+                return this.request(`category/${categoryId}`, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData),
+                    body: JSON.stringify(categoryData),
                 });
             }
 
-            async deleteUser(userId) {
-                return this.request(`admin/${userId}`, {
+            async deleteCategory(categoryId) {
+                return this.request(`category/${categoryId}`, {
                     method: 'DELETE',
                 });
             }
-
-            async getRoles() {
-                return this.request('admin/roles');
-            }
         }
 
-        // Pagination: Класс для управления пагинацией
+        // Класс Pagination для управления пагинацией
         class Pagination {
             constructor(containerId, onPageChange) {
                 this.container = document.getElementById(containerId);
@@ -303,14 +228,12 @@
             }
 
             setup(totalPages, currentPage) {
-                console.log(`Setting up pagination: totalPages=${totalPages}, currentPage=${currentPage}`);
                 this.currentPage = currentPage;
                 this.totalPages = totalPages;
                 this.render();
             }
 
             render() {
-                console.log(`Rendering pagination: totalPages=${this.totalPages}, currentPage=${this.currentPage}`);
                 if (this.totalPages === 0) {
                     this.container.innerHTML = '';
                     return;
@@ -333,9 +256,9 @@
                 }
 
                 // Первая страница и "..."
-                if (this.currentPage > 2) { // Изменено с >1 на >2
+                if (this.currentPage > 2) {
                     paginationItems += this.createPaginationItem(0, '1');
-                    if (this.currentPage > 3) { // Изменено с >2 на >3
+                    if (this.currentPage > 3) {
                         paginationItems += this.createDisabledPaginationItem('...');
                     }
                 }
@@ -348,8 +271,8 @@
                 }
 
                 // Последняя страница и "..."
-                if (this.currentPage < this.totalPages - 3) { // Изменено с < this.totalPages - 2 на < this.totalPages - 3
-                    if (this.currentPage < this.totalPages - 4) { // Изменено с < this.totalPages - 3 на < this.totalPages - 4
+                if (this.currentPage < this.totalPages - 3) {
+                    if (this.currentPage < this.totalPages - 4) {
                         paginationItems += this.createDisabledPaginationItem('...');
                     }
                     paginationItems += this.createPaginationItem(this.totalPages - 1, this.totalPages);
@@ -399,21 +322,21 @@
             }
         }
 
-        // UserTable: Класс для управления таблицей пользователей
-        class UserTable {
+        // CategoryTable: Класс для управления таблицей категорий
+        class CategoryTable {
             constructor(tableBodyId, onEdit, onDelete) {
                 this.tableBody = document.getElementById(tableBodyId);
                 this.onEdit = onEdit;
                 this.onDelete = onDelete;
             }
 
-            populate(users) {
+            populate(categories) {
                 this.tableBody.innerHTML = ''; // Очистка таблицы
 
-                if (users.length === 0) {
+                if (categories.length === 0) {
                     const row = document.createElement('tr');
                     const cell = document.createElement('td');
-                    cell.colSpan = 5;
+                    cell.colSpan = 4;
                     cell.className = 'text-center';
                     cell.textContent = 'Нет данных для отображения';
                     row.appendChild(cell);
@@ -421,32 +344,26 @@
                     return;
                 }
 
-                users.forEach(user => {
+                categories.forEach(category => {
                     const row = document.createElement('tr');
 
                     // ID
                     const idCell = document.createElement('td');
                     idCell.className = 'text-center';
-                    idCell.textContent = user.id;
+                    idCell.textContent = category.id;
                     row.appendChild(idCell);
 
-                    // Имя Фамилия
+                    // Название
                     const nameCell = document.createElement('td');
                     nameCell.className = 'text-center';
-                    nameCell.textContent = `${user.name} ${user.surname}`;
+                    nameCell.textContent = category.name;
                     row.appendChild(nameCell);
 
-                    // Почта
-                    const emailCell = document.createElement('td');
-                    emailCell.className = 'text-center';
-                    emailCell.textContent = user.email;
-                    row.appendChild(emailCell);
-
-                    // Права
-                    const roleCell = document.createElement('td');
-                    roleCell.className = 'text-center';
-                    roleCell.textContent = user.role;
-                    row.appendChild(roleCell);
+                    // Описание
+                    const descCell = document.createElement('td');
+                    descCell.className = 'text-center';
+                    descCell.textContent = category.description;
+                    row.appendChild(descCell);
 
                     // Actions
                     const actionsCell = document.createElement('td');
@@ -455,13 +372,13 @@
                     const editButton = document.createElement('button');
                     editButton.className = 'btn btn-sm btn-primary me-2';
                     editButton.textContent = 'Редактировать';
-                    editButton.addEventListener('click', () => this.onEdit(user.id));
+                    editButton.addEventListener('click', () => this.onEdit(category.id));
                     actionsCell.appendChild(editButton);
 
                     const deleteButton = document.createElement('button');
                     deleteButton.className = 'btn btn-sm btn-danger';
                     deleteButton.textContent = 'Удалить';
-                    deleteButton.addEventListener('click', () => this.onDelete(user.id));
+                    deleteButton.addEventListener('click', () => this.onDelete(category.id));
                     actionsCell.appendChild(deleteButton);
 
                     row.appendChild(actionsCell);
@@ -470,24 +387,18 @@
             }
         }
 
-        // UserModal: Класс для управления модальным окном создания/редактирования пользователя
-        class UserModal {
-            constructor(modalId, formId, onSubmit, apiService) {
+        // CategoryModal: Класс для управления модальным окном создания/редактирования категории
+        class CategoryModal {
+            constructor(modalId, formId, onSubmit) {
                 this.modal = document.getElementById(modalId);
                 this.form = document.getElementById(formId);
                 this.onSubmit = onSubmit;
-                this.apiService = apiService; // Добавляем ссылку на APIService
                 this.isEditMode = false;
-                this.editUserId = null;
+                this.editCategoryId = null;
 
                 // Элементы формы
                 this.nameInput = this.form.querySelector('input[name="name"]');
-                this.surnameInput = this.form.querySelector('input[name="surname"]');
-                this.emailInput = this.form.querySelector('input[name="email"]');
-                this.phoneInput = this.form.querySelector('input[name="phoneNumber"]');
-                this.passwordInput = this.form.querySelector('input[name="password"]');
-                this.roleSelect = this.form.querySelector('select[name="role"]');
-                this.isActiveCheckbox = this.form.querySelector('input[name="isActive"]');
+                this.descriptionInput = this.form.querySelector('textarea[name="description"]');
 
                 // Обработчики событий
                 this.form.addEventListener('submit', (e) => {
@@ -499,67 +410,28 @@
                     this.clearForm();
                 });
 
-                this.loadRoles();
+                this.initializeModal();
             }
 
-            async loadRoles() {
-                try {
-                    const roles = await this.apiService.getRoles();
-                    console.log('Роли загружены:', roles);
-                    this.populateRoles(roles);
-                } catch (error) {
-                    console.error('Ошибка при загрузке ролей:', error);
-                }
-            }
-
-            populateRoles(roles) {
-                // Очищаем текущие опции, кроме первой (загрузка)
-                this.roleSelect.innerHTML = '<option value="" disabled selected>Выберите роль</option>';
-
-                roles.forEach(role => {
-                    console.log(role);
-                    const option = document.createElement('option');
-                    option.value = role; // Предполагается, что role это строка, например "ADMIN"
-                    // Преобразуем роль в читаемый формат, например "ADMIN" -> "Администратор"
-                    option.textContent = this.getRoleDisplayName(role);
-                    this.roleSelect.appendChild(option);
-                });
-            }
-
-            getRoleDisplayName(role) {
-                const roleNames = {
-                    ADMIN: 'Администратор',
-                    SUPER_ADMIN: 'Супер Администратор',
-                    MODERATOR: 'Модератор',
-                    MANAGER: 'Менеджер' // Добавьте другие роли по необходимости
-                };
-                return roleNames[role] || role;
-            }
-
-            open(isEdit = false, userData = null) {
+            open(isEdit = false, categoryData = null) {
                 this.isEditMode = isEdit;
-                if (isEdit && userData) {
-                    this.editUserId = userData.id;
-                    this.nameInput.value = userData.name;
-                    this.surnameInput.value = userData.surname;
-                    this.emailInput.value = userData.email;
-                    this.phoneInput.value = userData.phoneNumber;
-                    this.passwordInput.value = ''; // Оставляем пароль пустым при редактировании
-                    this.roleSelect.value = userData.role;
-                    this.isActiveCheckbox.checked = userData.isActive;
+                if (isEdit && categoryData) {
+                    this.editCategoryId = categoryData.id;
+                    this.nameInput.value = categoryData.name;
+                    this.descriptionInput.value = categoryData.description;
                 } else {
                     this.clearForm();
                 }
 
                 const modalTitle = this.modal.querySelector('.modal-title');
-                modalTitle.textContent = isEdit ? 'Редактировать Пользователя' : 'Создать Пользователя';
+                modalTitle.textContent = isEdit ? 'Редактировать Категорию' : 'Создать Категорию';
                 this.modalInstance.show();
             }
 
             clearForm() {
                 this.form.reset();
                 this.removeValidationErrors();
-                this.editUserId = null;
+                this.editCategoryId = null;
                 this.isEditMode = false;
             }
 
@@ -571,29 +443,23 @@
             async handleSubmit() {
                 this.removeValidationErrors();
 
-                const userData = {
+                const categoryData = {
                     name: this.nameInput.value.trim(),
-                    surname: this.surnameInput.value.trim(),
-                    email: this.emailInput.value.trim(),
-                    phoneNumber: this.phoneInput.value.trim(),
-                    password: this.passwordInput.value, // Возможно, оставить пустым при редактировании
-                    role: this.roleSelect.value,
-                    isActive: this.isActiveCheckbox.checked
+                    description: this.descriptionInput.value.trim(),
                 };
 
                 try {
-                    await this.onSubmit(this.isEditMode, this.editUserId, userData);
+                    await this.onSubmit(this.isEditMode, this.editCategoryId, categoryData);
                     this.close(); // Закрываем модальное окно после успешного создания/редактирования
                     $('.modal-backdrop').remove();
                 } catch (error) {
                     if (error.status === 400 && error.data) {
                         this.displayValidationErrors(error.data);
                     } else {
-                        console.error('Ошибка при сохранении пользователя:', error);
+                        console.error('Ошибка при сохранении категории:', error);
                     }
                 }
             }
-
 
             displayValidationErrors(errors) {
                 for (const field in errors) {
@@ -631,11 +497,11 @@
                 this.modal = document.getElementById(modalId);
                 this.confirmButton = document.getElementById(confirmButtonId);
                 this.onConfirm = onConfirm;
-                this.userId = null;
+                this.entityId = null;
 
                 this.confirmButton.addEventListener('click', () => {
-                    if (this.userId !== null) {
-                        this.onConfirm(this.userId);
+                    if (this.entityId !== null) {
+                        this.onConfirm(this.entityId);
                         this.close();
                     }
                 });
@@ -643,14 +509,14 @@
                 this.initializeModal();
             }
 
-            open(userId) {
-                this.userId = userId;
+            open(entityId) {
+                this.entityId = entityId;
                 this.modalInstance.show();
             }
 
             close() {
                 this.modalInstance.hide();
-                this.userId = null;
+                this.entityId = null;
             }
 
             initializeModal() {
@@ -663,12 +529,12 @@
             }
         }
 
-        class UserTableApp {
+        class CategoryTableApp {
             constructor(config) {
-                this.apiService = new APIService(config.apiBaseURL); // Передаем contextPath + "/admin" в APIService
-                this.userTable = new UserTable(config.tableBodyId, this.handleEdit.bind(this), this.handleDelete.bind(this));
+                this.apiService = new APIService(config.apiBaseURL);
+                this.categoryTable = new CategoryTable(config.tableBodyId, this.handleEdit.bind(this), this.handleDelete.bind(this));
                 this.pagination = new Pagination(config.paginationId, this.handlePageChange.bind(this));
-                this.userModal = new UserModal(config.modalId, config.formId, this.handleFormSubmit.bind(this), this.apiService);
+                this.categoryModal = new CategoryModal(config.modalId, config.formId, this.handleFormSubmit.bind(this));
                 this.deleteConfirmModal = new DeleteConfirmModal(config.deleteModalId, config.confirmDeleteBtnId, this.handleDeleteConfirm.bind(this));
                 this.searchInput = document.getElementById(config.searchInputId);
                 this.pageSizeSelect = document.getElementById(config.pageSizeSelectId);
@@ -683,41 +549,33 @@
 
             initialize() {
                 // Инициализация модальных окон
-                this.userModal.initializeModal();
+                this.categoryModal.initializeModal();
                 this.deleteConfirmModal.initializeModal();
 
                 // Загрузка начальных данных
-                this.fetchAndRenderUsers();
+                this.fetchAndRenderCategories();
 
                 // Обработчик изменения размера страницы
                 this.pageSizeSelect.addEventListener('change', () => {
                     this.pageSize = parseInt(this.pageSizeSelect.value, 10);
                     this.currentPage = 0;
-                    this.fetchAndRenderUsers();
+                    this.fetchAndRenderCategories();
                 });
 
-                // Обработчик создания нового пользователя
+                // Обработчик создания новой категории
                 this.createButton.addEventListener('click', () => {
-                    this.userModal.open(false);
+                    this.categoryModal.open(false);
                 });
 
                 // Обработчик поиска
                 this.searchInput.addEventListener('input', () => {
                     this.searchQuery = this.searchInput.value.trim();
                     this.currentPage = 0;
-                    this.fetchAndRenderUsers();
+                    this.fetchAndRenderCategories();
                 });
             }
 
-            showLoading() {
-                this.loadingIndicator.classList.remove('d-none');
-            }
-
-            hideLoading() {
-                this.loadingIndicator.classList.add('d-none');
-            }
-
-            async blockCard  (message = 'Загрузка...') {
+            async blockCard(message = 'Загрузка...') {
                 $('#card-block').block({
                     message: `<div class="spinner-border text-primary" role="status"></div><span class="ms-2">${message}</span>`,
                     css: {
@@ -730,31 +588,28 @@
                 });
             }
 
-            // Функция для разблокировки карточки
-            async unblockCard()  {
+            async unblockCard() {
                 $('#card-block').unblock();
-            };
+            }
 
-
-            async fetchAndRenderUsers() {
+            async fetchAndRenderCategories() {
                 try {
                     await this.blockCard();
-                    const data = await this.apiService.getAllUsers(this.currentPage, this.pageSize, this.searchQuery);
-                    const users = data.content;
+                    const data = await this.apiService.getAllCategories(this.currentPage, this.pageSize, this.searchQuery);
+                    const categories = data.content;
 
-                    // Проверка корректности currentPage
                     if (this.currentPage >= data.totalPages && data.totalPages > 0) {
                         this.currentPage = data.totalPages - 1;
-                        const updatedData = await this.apiService.getAllUsers(this.currentPage, this.pageSize, this.searchQuery);
-                        this.userTable.populate(updatedData.content);
+                        const updatedData = await this.apiService.getAllCategories(this.currentPage, this.pageSize, this.searchQuery);
+                        this.categoryTable.populate(updatedData.content);
                         this.pagination.setup(updatedData.totalPages, this.currentPage);
                         return;
                     }
 
-                    this.userTable.populate(users);
+                    this.categoryTable.populate(categories);
                     this.pagination.setup(data.totalPages, this.currentPage);
                 } catch (error) {
-                    console.error('Ошибка при загрузке пользователей:', error);
+                    console.error('Ошибка при загрузке категорий:', error);
                 } finally {
                     await this.unblockCard();
                 }
@@ -762,49 +617,44 @@
 
             handlePageChange(newPage) {
                 this.currentPage = newPage;
-                this.fetchAndRenderUsers();
+                this.fetchAndRenderCategories();
             }
 
-            handleEdit(userId) {
-                this.apiService.getUserById(userId)
-                    .then(userData => {
-                        this.userModal.open(true, userData);
+            handleEdit(categoryId) {
+                this.apiService.getCategoryById(categoryId)
+                    .then(categoryData => {
+                        this.categoryModal.open(true, categoryData);
                     })
                     .catch(error => {
-                        console.error('Ошибка при получении данных пользователя:', error);
+                        console.error('Ошибка при получении данных категории:', error);
                     });
             }
 
-            handleDelete(userId) {
-                this.deleteConfirmModal.open(userId);
+            handleDelete(categoryId) {
+                this.deleteConfirmModal.open(categoryId);
             }
 
-            async handleDeleteConfirm(userId) {
+            async handleDeleteConfirm(categoryId) {
                 try {
-                    await this.apiService.deleteUser(userId);
-                    // После успешного удаления, обновляем список пользователей
-                    // Если deleteUser возвращает null, нет ошибки
-                    // Если после удаления текущая страница пуста, переходим на предыдущую
-                    const dataAfterDeletion = await this.apiService.getAllUsers(this.currentPage, this.pageSize, this.searchQuery);
+                    await this.apiService.deleteCategory(categoryId);
+                    const dataAfterDeletion = await this.apiService.getAllCategories(this.currentPage, this.pageSize, this.searchQuery);
                     if (dataAfterDeletion.content.length === 0 && this.currentPage > 0) {
                         this.currentPage--;
                     }
-                    this.fetchAndRenderUsers();
+                    this.fetchAndRenderCategories();
                 } catch (error) {
-                    console.error('Ошибка при удалении пользователя:', error);
+                    console.error('Ошибка при удалении категории:', error);
                 }
             }
 
-
-
-            async handleFormSubmit(isEditMode, userId, userData) {
+            async handleFormSubmit(isEditMode, categoryId, categoryData) {
                 try {
                     if (isEditMode) {
-                        await this.apiService.updateUser(userId, userData);
+                        await this.apiService.updateCategory(categoryId, categoryData);
                     } else {
-                        await this.apiService.createUser(userData);
+                        await this.apiService.createCategory(categoryData);
                     }
-                    this.fetchAndRenderUsers();
+                    this.fetchAndRenderCategories();
                 } catch (error) {
                     throw error;
                 }
@@ -813,12 +663,12 @@
 
         // Инициализация приложения после загрузки DOM
         document.addEventListener('DOMContentLoaded', () => {
-            const app = new UserTableApp({
-                apiBaseURL: `${contextPath}`, // Устанавливаем правильный baseURL
+            const app = new CategoryTableApp({
+                apiBaseURL: `${contextPath}`,
                 tableBodyId: 'table-body',
                 paginationId: 'pagination',
-                modalId: 'editAdminUser',
-                formId: 'editAdminUserForm',
+                modalId: 'editCategory',
+                formId: 'editCategoryForm',
                 deleteModalId: 'deleteConfirmModal',
                 confirmDeleteBtnId: 'confirm-delete-btn',
                 searchInputId: 'search',
@@ -826,16 +676,12 @@
                 createButtonId: 'createEntity',
                 loadingIndicatorId: 'loading-indicator'
             });
-
-            // Инициализация маски номера телефона
-            const phoneInput = document.getElementById('adminUserPhone');
-            if (phoneInput) {
-                Inputmask("999 999 9999").mask(phoneInput);
-            }
         });
     </script>
     <script th:src="@{/assets/vendor/js/bootstrap.js}"></script>
 </div>
+
+
 </body>
 </html>
 

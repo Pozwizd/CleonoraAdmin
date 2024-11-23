@@ -2,7 +2,9 @@ package com.example.cleonoraadmin.config;
 
 import com.example.cleonoraadmin.entity.AdminRole;
 import com.example.cleonoraadmin.entity.AdminUser;
+import com.example.cleonoraadmin.entity.Category;
 import com.example.cleonoraadmin.service.AdminUserService;
+import com.example.cleonoraadmin.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -15,6 +17,8 @@ import org.springframework.context.event.EventListener;
 public class DataLoader {
     private final Faker faker;
     private final AdminUserService adminUserService;
+    private final CategoryService categoryServiceImp;
+
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadUsers() {
@@ -38,6 +42,13 @@ public class DataLoader {
             adminUser.setRole(AdminRole.MANAGER);
             adminUserService.saveNewUser(adminUser);
 
+        }
+
+        while (!categoryServiceImp.ifCategoryMoreThan(50)){
+            Category category = new Category();
+            category.setName(faker.commerce().productName());
+            category.setDescription(faker.lorem().sentence());
+            categoryServiceImp.save(category);
         }
 
     }

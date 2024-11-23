@@ -2,8 +2,10 @@ package com.example.cleonoraadmin.service;
 
 
 import com.example.cleonoraadmin.entity.AdminUser;
-import com.example.cleonoraadmin.model.AdminUserRequest;
-import com.example.cleonoraadmin.model.AdminUserResponse;
+import com.example.cleonoraadmin.model.admin.AdminUserProfileRequest;
+import com.example.cleonoraadmin.model.admin.AdminUserProfileResponse;
+import com.example.cleonoraadmin.model.admin.AdminUserRequest;
+import com.example.cleonoraadmin.model.admin.AdminUserResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -27,5 +29,11 @@ public interface AdminUserService {
     AdminUserResponse updateAdminUser(Long id, @Valid AdminUserRequest adminUserRequest);
 
     boolean deleteAdminUserById(Long id);
+
+    AdminUserProfileResponse getAdminUserProfile(String username);
+
+
+
+    AdminUserProfileResponse updateAdminUserProfile(@Valid AdminUserProfileRequest adminUserRequest);
 }
 
