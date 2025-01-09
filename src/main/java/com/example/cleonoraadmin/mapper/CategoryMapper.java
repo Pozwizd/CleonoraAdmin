@@ -6,6 +6,8 @@ import com.example.cleonoraadmin.model.category.CategoryResponse;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CategoryMapper {
 
@@ -26,4 +28,6 @@ public interface CategoryMapper {
     }
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Category partialUpdate(CategoryRequest categoryDto, @MappingTarget Category category);
+
+    List<CategoryResponse> toResponseList(List<Category> all);
 }

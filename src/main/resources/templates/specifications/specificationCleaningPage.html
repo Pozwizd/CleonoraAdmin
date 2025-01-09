@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template/layout.html">
+
+<body>
+
+<div layout:fragment="content">
+
+    <div class="d-flex flex-row justify-content-center align-items-center">
+        <h4 class="fw-bold pt-3">Спецификации</h4>
+    </div>
+
+    <div class="card" id="card-block">
+
+        <div class="card-header py-2">
+            <div class="row w-100 align-items-center justify-content-end">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <label class="d-flex align-items-center gap-2 w-100">
+                        Поиск:
+                        <input type="text" id="search" class="form-control" placeholder="Поиск...">
+                    </label>
+                </div>
+
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#editSpecificationModal">
+                        <i class="ti ti-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card-body">
+            <div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr id="table-head">
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Название Спецификации</th>
+                            <th class="text-center">Базовая стоимость</th>
+                            <th class="text-center">Коэффициент сложности</th>
+                            <th class="text-center">Единица измерения</th>
+                            <th class="text-center">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center pb-0">
+            <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
+                Показать:
+                <select id="pageSize" class="form-control">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                </select>
+            </label>
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination" id="pagination">
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="loading-indicator" class="d-none justify-content-center align-items-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+
+        <!-- Модальное окно для создания/редактирования спецификации -->
+        <div class="modal fade" id="editSpecificationModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-simple modal-edit-specification">
+                <div class="modal-content p-3 p-md-5">
+                    <div class="modal-body">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        <div class="text-center mb-4">
+                            <h3 class="modal-title mb-2">Создать Спецификацию</h3>
+                            <p class="text-muted">Добавление новой спецификации.</p>
+                        </div>
+                        <form id="editSpecificationForm" class="row g-3" enctype="multipart/form-data" onsubmit="return false">
+                            <input type="hidden" name="id" id="specificationId">
+                            <div class="col-12">
+                                <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                    <img
+                                            th:src="@{/customAssets/img.jpg}"
+                                            alt="Иконка спецификации"
+                                            class="d-block w-px-100 h-px-100 rounded"
+                                            id="uploadedIcon"
+                                    />
+                                    <div class="button-wrapper">
+                                        <label for="iconUpload" class="btn btn-primary me-2 mb-3" tabindex="0">
+                                            <span class="d-none d-sm-block">Загрузить новую иконку</span>
+                                            <i class="ti ti-upload d-block d-sm-none"></i>
+                                            <input
+                                                    type="file"
+                                                    id="iconUpload"
+                                                    name="icon"
+                                                    class="specification-file-input"
+                                                    hidden
+                                                    accept="image/png, image/jpeg, image/gif"
+                                            />
+                                        </label>
+                                        <button type="button" id="specification-image-reset" class="btn btn-label-secondary specification-image-reset mb-3">
+                                            <i class="ti ti-refresh-dot d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Сбросить</span>
+                                        </button>
+                                        <div class="text-muted">Допустимые форматы: JPG, GIF, PNG. Максимальный размер: 800КБ</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                let accountUserImage = document.getElementById('uploadedIcon');
+                                const fileInput = document.querySelector('.specification-file-input'),
+                                    resetFileInput = document.querySelector('.specification-image-reset');
+
+                                if (accountUserImage) {
+                                    const resetImage = accountUserImage.src;
+                                    fileInput.onchange = () => {
+                                        if (fileInput.files[0]) {
+                                            accountUserImage.src = window.URL.createObjectURL(fileInput.files[0]);
+                                        }
+                                    };
+                                    resetFileInput.onclick = () => {
+                                        fileInput.value = '';
+                                        accountUserImage.src = resetImage;
+                                    };
+                                }
+                            </script>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="specName">Название Спецификации</label>
+                                <input
+                                        type="text"
+                                        id="specName"
+                                        name="name"
+                                        class="form-control"
+                                        placeholder="Название спецификации"
+                                        required
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="baseCost">Базовая стоимость</label>
+                                <input
+                                        type="number"
+                                        step="0.01"
+                                        id="baseCost"
+                                        name="baseCost"
+                                        class="form-control"
+                                        placeholder="0.00"
+                                        required
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="complexityCoefficient">Коэффициент сложности</label>
+                                <input
+                                        type="number"
+                                        step="0.01"
+                                        id="complexityCoefficient"
+                                        name="complexityCoefficient"
+                                        class="form-control"
+                                        placeholder="0.00"
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="ecoFriendlyExtraCost">Экологичная наценка</label>
+                                <input
+                                        type="number"
+                                        step="0.01"
+                                        id="ecoFriendlyExtraCost"
+                                        name="ecoFriendlyExtraCost"
+                                        class="form-control"
+                                        placeholder="0.00"
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="frequencyCoefficient">Коэффициент частоты</label>
+                                <input
+                                        type="number"
+                                        step="0.01"
+                                        id="frequencyCoefficient"
+                                        name="frequencyCoefficient"
+                                        class="form-control"
+                                        placeholder="0.00"
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="locationCoefficient">Коэффициент локации</label>
+                                <input
+                                        type="number"
+                                        step="0.01"
+                                        id="locationCoefficient"
+                                        name="locationCoefficient"
+                                        class="form-control"
+                                        placeholder="0.00"
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="timeMultiplier">Множитель времени</label>
+                                <input
+                                        type="number"
+                                        step="0.01"
+                                        id="timeMultiplier"
+                                        name="timeMultiplier"
+                                        class="form-control"
+                                        placeholder="0.00"
+                                />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="unit">Единица измерения</label>
+                                <input
+                                        type="text"
+                                        id="unit"
+                                        name="unit"
+                                        class="form-control"
+                                        placeholder="например, шт., кг."
+                                />
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
+                                <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Закрыть"
+                                >
+                                    Отменить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно подтверждения удаления -->
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите удалить эту спецификацию?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Отменить</button>
+                        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new GenericCRUDApp({
+                api: {
+                    baseURL: '[[@{/}]]'.replaceAll("\"", ""),
+                    endpoints: {
+                        getAll: 'specifications/getAllSpecifications',
+                        getById: 'specifications/{id}',
+                        create: 'specifications/create',
+                        update: 'specifications/{id}',
+                        delete: 'specifications/{id}'
+                    },
+                    entityType: 'formdata'
+                },
+                entityName: 'Спецификация',
+                tableBodyId: 'table-body',
+                paginationId: 'pagination',
+                modalId: 'editSpecificationModal',
+                formId: 'editSpecificationForm',
+                deleteModalId: 'deleteConfirmModal',
+                confirmDeleteBtnId: 'confirm-delete-btn',
+                searchInputId: 'search',
+                pageSizeSelectId: 'pageSize',
+                createButtonId: 'createEntity',
+                loadingIndicatorId: 'loading-indicator',
+                columns: [
+                    { key: 'id', title: 'ID' },
+                    { key: 'name', title: 'Название Спецификации' },
+                    {
+                        key: 'baseCost',
+                        title: 'Базовая стоимость',
+                        render: (item) => item.baseCost.toFixed(2)
+                    },
+                    {
+                        key: 'complexityCoefficient',
+                        title: 'Коэффициент сложности',
+                        render: (item) => item.complexityCoefficient ? item.complexityCoefficient.toFixed(2) : ''
+                    },
+                    { key: 'unit', title: 'Единица измерения' }
+                ],
+                formFields: [
+                    { name: 'id', type: 'hidden' },
+                    { name: 'name', type: 'text', label: 'Название Спецификации', required: true },
+                    { name: 'baseCost', type: 'number', label: 'Базовая стоимость', required: true },
+                    { name: 'complexityCoefficient', type: 'number', label: 'Коэффициент сложности' },
+                    { name: 'ecoFriendlyExtraCost', type: 'number', label: 'Экологичная наценка' },
+                    { name: 'frequencyCoefficient', type: 'number', label: 'Коэффициент частоты' },
+                    { name: 'locationCoefficient', type: 'number', label: 'Коэффициент локации' },
+                    { name: 'timeMultiplier', type: 'number', label: 'Множитель времени' },
+                    { name: 'unit', type: 'text', label: 'Единица измерения' },
+                    { name: 'icon', type: 'image', label: 'Иконка', previewId: 'uploadedIcon', resetButtonId: 'specification-image-reset', iconKey: 'icon' }
+                ],
+                toastConfig: {
+                    positionClass: 'toast-top-right',
+                    timeOut: 10000,
+                    progressBar: true,
+                    closeButton: false
+                },
+                notificationKeyword: 'message'
+            });
+        });
+    </script>
+    <script th:src="@{/customAssets/js/formCrudScript.js}"></script>
+</div>
+
+
+
+</body>
+</html>

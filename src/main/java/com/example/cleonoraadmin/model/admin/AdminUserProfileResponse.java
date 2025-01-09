@@ -2,18 +2,18 @@ package com.example.cleonoraadmin.model.admin;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 
 @Data
-public class AdminUserProfileResponse {
-    private Long id;
-    private String name;
-    private String surname;
-    private String avatar;
-    private String email;
-    private String phoneNumber;
-    private Boolean isActive;
-    private String role;
-    private List<Long> orderIds;
+public class AdminUserProfileResponse implements Serializable {
+    Long id;
+    String name;
+    String surname;
+    String avatar;
+    String email;
+    String phoneNumber;
+    Boolean isActive;
+    String role;
 }

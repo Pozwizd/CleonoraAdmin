@@ -2,7 +2,7 @@
 server:
   servlet:
     context-path: /cleonora/admin
-  port: 8072
+  port: 8081
 
 
 spring:
@@ -23,7 +23,7 @@ spring:
         default_schema: cleonora_database
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
   servlet:
     multipart:
@@ -48,3 +48,47 @@ logging:
 upload:
   folder:
     path: "/home/slj/projects/Cleonora-R.Miahkykh/uploads"
+
+
+
+
+work-schedule:
+  schedule:
+    monday:
+      start: "08:00"
+      end: "18:00"
+      lunch:
+        start: "12:00"
+        end: "13:00"
+    tuesday:
+      start: "08:00"
+      end: "18:00"
+      lunch:
+        start: "12:00"
+        end: "13:00"
+    wednesday:
+      start: "08:00"
+      end: "18:00"
+      lunch:
+        start: "12:00"
+        end: "13:00"
+    thursday:
+      start: "08:00"
+      end: "18:00"
+      lunch:
+        start: "12:00"
+        end: "13:00"
+    friday:
+      start: "08:00"
+      end: "18:00"
+      lunch:
+        start: "12:00"
+        end: "13:00"
+    saturday:
+      start: "10:00"
+      end: "14:00"
+      lunch:
+        start: "12:00"
+        end: "12:30"
+    sunday:
+      start: "off"

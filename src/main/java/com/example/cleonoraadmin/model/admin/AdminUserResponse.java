@@ -13,5 +13,4 @@ public class AdminUserResponse {
     private String phoneNumber;
     private Boolean isActive;
     private String role;
-    private List<Long> orderIds;
 }

@@ -1,7 +1,6 @@
 package com.example.cleonoraadmin.entity;
 
 import jakarta.persistence.*;
-
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,7 +8,41 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+
+/**
+ AdminUser
+- id: Long
+- name: String
+- surname: String
+- avatar: String
+- email: String
+- phoneNumber: String
+- password: String
+- isActive: Boolean
+- role: AdminRole
+- passwordResetToken: PasswordResetToken
+--
++ getId(): Long
++ setId(Long id)
++ getName(): String
++ setName(String name)
++ getSurname(): String
++ setSurname(String surname)
++ getAvatar(): String
++ setAvatar(String avatar)
++ getEmail(): String
++ setEmail(String email)
++ getPhoneNumber(): String
++ setPhoneNumber(String phoneNumber)
++ getPassword(): String
++ setPassword(String password)
++ getIsActive(): Boolean
++ setIsActive(Boolean isActive)
++ getRole(): AdminRole
++ setRole(AdminRole role)
++ getPasswordResetToken(): PasswordResetToken
++ setPasswordResetToken(PasswordResetToken passwordResetToken)
+ */
 
 @Entity
 @Data
@@ -35,6 +68,9 @@ public class AdminUser implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private AdminRole role = AdminRole.ADMIN;
+
+    @OneToOne(mappedBy = "adminUser", cascade = CascadeType.ALL)
+    private PasswordResetToken passwordResetToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

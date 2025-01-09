@@ -4,8 +4,8 @@
         class="light-style layout-navbar-fixed layout-menu-fixed"
         dir="ltr"
         data-theme="theme-default"
-        data-assets-path="/assets/"
-        data-template="vertical-menu-template-starter"
+        th:data-assets-path="@{/assets/}"
+        data-template="vertical-menu-template"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         xmlns:th="http://www.thymeleaf.org">
 
@@ -72,49 +72,36 @@
                         <div>Статистика</div>
                     </a>
                 </li>
+
+                <li class="menu-item" th:classappend="${pageActive == 'order' ? 'active' : ''}">
+                    <a th:href="@{/order}" class="menu-link">
+                        <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
+                        <div>Заказы</div>
+                    </a>
+                </li>
+
                 <li th:classappend="${pageActive == 'customers' ? 'active' : ''}" class="menu-item">
                     <a th:href="@{/customer}" class="menu-link" >
                         <i class="menu-icon tf-icons ti ti-users"></i>
                         <div>Клиенты</div>
                     </a>
                 </li>
-
-                <li class="menu-item" th:classappend="${pageActive == 'products' || pageActive == 'categories' || pageActive == 'attributeProduct' ? 'active open' : ''}">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons ti ti-coffee"></i>
-                        <div>Продукты</div>
+                <li th:classappend="${pageActive == 'cleaning' ? 'active' : ''}" class="menu-item">
+                    <a th:href="@{/cleaning}" class="menu-link">
+                        <i class="menu-icon tf-icons ti ti-settings"></i>
+                        <div>Сервисы</div>
                     </a>
-                    <ul class="menu-sub">
-                        <li th:classappend="${pageActive == 'categories' ? 'active' : ''}" class="menu-item" >
-                            <a th:href="@{/category}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-app-window"></i>
-                                <div>Категории</div>
-                            </a>
-                        </li>
-                        <li th:classappend="${pageActive == 'products' ? 'active' : ''}" class="menu-item" >
-                            <a th:href="@{/product}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-app-window"></i>
-                                <div>Продукты</div>
-                            </a>
-                        </li>
-                        <li class="menu-item" th:classappend="${pageActive == 'attributeProduct' ? 'active' : ''}" >
-                            <a th:href="@{/attribute}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-app-window"></i>
-                                <div>Свойства продуктов</div>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-
-                <li th:classappend="${pageActive == 'order' ? 'active' : ''}" class="menu-item">
-                    <a th:href="@{/order}" class="menu-link">
+                <li th:classappend="${pageActive == 'specifications' ? 'active' : ''}" class="menu-item">
+                    <a th:href="@{/specifications}" class="menu-link">
                         <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
-                        <div>Заказы</div>
+                        <div>Спецификации</div>
                     </a>
                 </li>
-                <li th:classappend="${pageActive == 'categories' ? 'active' : ''}" class="menu-item" >
+
+                <li th:classappend="${pageActive == 'categories' ? 'active' : ''}" class="menu-item">
                     <a th:href="@{/category}" class="menu-link">
-                        <i class="menu-icon tf-icons ti ti-app-window"></i>
+                        <i class="menu-icon tf-icons ti ti-apps"></i>
                         <div>Категории</div>
                     </a>
                 </li>
@@ -124,6 +111,7 @@
                         <div>Пользователи</div>
                     </a>
                 </li>
+
 
             </ul>
         </aside>
@@ -154,7 +142,11 @@
                         <li class="nav-item navbar-dropdown dropdown-user dropdown">
                             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                 <div class="avatar avatar-online">
-                                    <img th:src="@{/assets/img/avatars/1.png}" alt class="h-auto rounded-circle" />
+                                    <img
+                                    <img th:src="@{{logoImage}(logoImage=${!#strings.isEmpty(currentUser.avatar)}
+                                                ? ${currentUser.avatar}
+                                                : @{/assets/img/avatars/1.png})}"
+                                         alt class="h-auto rounded-circle" />
                                 </div>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -163,12 +155,15 @@
                                         <div class="d-flex">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="avatar avatar-online">
-                                                    <img th:src="@{/assets/img/avatars/1.png}" alt class="h-auto rounded-circle" />
+                                                    <img th:src="@{{logoImage}(logoImage=${!#strings.isEmpty(currentUser.avatar)}
+                                                ? ${currentUser.avatar}
+                                                : @{/assets/img/avatars/1.png})}"
+                                                         alt class="h-auto rounded-circle" />
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1">
-                                                <span class="fw-semibold d-block" th:text="${userName}" >John Doe</span>
-                                                <small class="text-muted" th:text="${userRole}">Admin</small>
+                                                <span class="fw-semibold d-block" th:text="${currentUser.name}" >John Doe</span>
+                                                <small class="text-muted" th:text="${currentUser.role}">Admin</small>
                                             </div>
                                         </div>
                                     </a>

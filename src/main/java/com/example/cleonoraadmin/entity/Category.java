@@ -1,27 +1,21 @@
 package com.example.cleonoraadmin.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.Data;
 
 /**
  Category
- - id: Long
- - name: String
- - description: String
- --
- - getId(): Long
- - setId(Long id)
- - getName(): String
- - setName(String name)
- - getDescription(): String
- - setDescription(String description)
+- id: Long
+- name: String
+- description: String
+--
++ getId(): Long
++ setId(Long id)
++ getName(): String
++ setName(String name)
++ getDescription(): String
++ setDescription(String description)
  */
-
-
 @Entity
 @Data
 public class Category {

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template/layout.html">
+
+<body>
+
+<div layout:fragment="content">
+
+    <div class="d-flex flex-row justify-content-center align-items-center">
+        <h4 class="fw-bold pt-3">Заказы</h4>
+    </div>
+
+    <div class="card" id="card-block">
+
+        <div class="card-header py-2">
+            <div class="row w-100 align-items-center justify-content-end">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <label class="d-flex align-items-center gap-2 w-100">
+                        Поиск:
+                        <input type="text" id="search" class="form-control" placeholder="Поиск...">
+                    </label>
+                </div>
+
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity"
+                            data-bs-target="#editOrder">
+                        <i class="ti ti-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr id="table-head">
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Дата</th>
+                            <th class="text-center">Длительность</th>
+                            <th class="text-center">Цена</th>
+                            <th class="text-center">Статус</th>
+                            <th class="text-center">Клиент</th>
+                            <th class="text-center">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center pb-0">
+            <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
+                Показать:
+                <select id="pageSize" class="form-control">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                </select>
+            </label>
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination" id="pagination"></ul>
+            </nav>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="loading-indicator" class="d-none justify-content-center align-items-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+
+        <!-- Модальное окно для создания/редактирования заказа -->
+        <div class="modal fade" id="editOrder" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-simple modal-edit-order">
+                <div class="modal-content p-3 p-md-5">
+                    <div class="modal-body">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        <div class="text-center mb-4">
+                            <h3 class="modal-title mb-2" id="modal-title">Создать Заказ</h3>
+                        </div>
+                        <form id="editOrderForm" class="row g-3" onsubmit="return false">
+                            <input type="hidden" name="id">
+
+                            <!-- Дата -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="orderDate">Дата</label>
+                                <input
+                                        type="date"
+                                        id="orderDate"
+                                        name="startDate"
+                                        class="form-control"
+                                        placeholder="Дата заказа"
+                                />
+                            </div>
+
+                            <!-- Время -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="orderTime">Время</label>
+                                <input
+                                        type="time"
+                                        id="orderTime"
+                                        name="startTime"
+                                        class="form-control"
+                                        placeholder="Время начала"
+                                />
+                            </div>
+
+                            <!-- Статус -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="orderStatus">Статус</label>
+                                <select id="orderStatus" name="status" class="form-select">
+                                    <option value="NEW">NEW</option>
+                                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                    <option value="DONE">DONE</option>
+                                    <option value="CANCELED">CANCELED</option>
+                                    <option value="SCHEDULED">SCHEDULED</option>
+                                </select>
+                            </div>
+
+                            <!-- Клиент -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label" for="orderCustomerId">Клиент</label>
+                                <select id="orderCustomerId" name="customerId" class="form-select"></select>
+                            </div>
+
+                            <!-- Услуги -->
+                            <div class="col-12">
+                                <h4 class="fw-bold">Услуги</h4>
+                                <button class="btn btn-secondary btn-sm mb-2" id="addService" type="button">
+                                    <i class="ti ti-plus"></i> Добавить услугу
+                                </button>
+                                <table class="table table-bordered" id="servicesTable">
+                                    <thead>
+                                    <tr>
+                                        <th>Услуга</th>
+                                        <th>Кол-во</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Кнопки отправки и отмены -->
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
+                                <button
+                                        type="reset"
+                                        class="btn btn-label-secondary"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Закрыть"
+                                >
+                                    Отменить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно подтверждения удаления -->
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите удалить этот заказ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Отменить</button>
+                        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/vendor/js/bootstrap.js}"></script>
+    <script th:inline="javascript">
+        let currentPage = 0;
+        let pageSize = document.getElementById('pageSize').value;
+        let currentSearch = '';
+        let basePath = '[[@{/}]]'.replaceAll("\"", "");
+
+        // Класс Pagination
+        class Pagination {
+            constructor(containerId, onPageChange) {
+                this.container = document.getElementById(containerId);
+                this.onPageChange = onPageChange;
+                this.currentPage = 0;
+                this.totalPages = 0;
+
+                this.container.addEventListener('click', this._handleClick.bind(this));
+            }
+
+            setup(totalPages, currentPage) {
+                this.currentPage = currentPage;
+                this.totalPages = totalPages;
+                this.render();
+            }
+
+            _handleClick(e) {
+                const link = e.target.closest('a');
+                if (link && this.container.contains(link)) {
+                    e.preventDefault();
+                    const page = link.getAttribute('data-page');
+                    if (page !== null) {
+                        const pageNumber = parseInt(page, 10);
+                        if (!isNaN(pageNumber) && pageNumber >= 0 && pageNumber < this.totalPages) {
+                            this.onPageChange(pageNumber);
+                        } else {
+                            console.error("Invalid page number:", page);
+                        }
+                    }
+                }
+            }
+
+            render() {
+                if (this.totalPages === 0) {
+                    this.container.innerHTML = '';
+                    return;
+                }
+
+                let paginationItems = '';
+                paginationItems += this._createNavItem(0, '<i class="ti ti-chevrons-left ti-xs"></i>', 'first', this.currentPage > 0);
+                paginationItems += this._createNavItem(this.currentPage - 1, '<i class="ti ti-chevron-left ti-xs"></i>', 'prev', this.currentPage > 0);
+                paginationItems += this._renderPageNumbers();
+                paginationItems += this._createNavItem(this.currentPage + 1, '<i class="ti ti-chevron-right ti-xs"></i>', 'next', this.currentPage < this.totalPages - 1);
+                paginationItems += this._createNavItem(this.totalPages - 1, '<i class="ti ti-chevrons-right ti-xs"></i>', 'last', this.currentPage < this.totalPages - 1);
+
+                this.container.innerHTML = paginationItems;
+            }
+
+            _renderPageNumbers() {
+                const ellipsisThreshold = 2;
+                const ellipsisOffset = 1;
+                let paginationItems = '';
+
+                const addFirstPageAndEllipsis = () => {
+                    paginationItems += this._createPageItem(0, '1');
+                    if (this.currentPage > ellipsisThreshold + ellipsisOffset) {
+                        paginationItems += this._createDisabledItem('...');
+                    }
+                };
+
+                const addLastPageAndEllipsis = () => {
+                    if (this.currentPage < this.totalPages - (ellipsisThreshold + ellipsisOffset + 1)) {
+                        paginationItems += this._createDisabledItem('...');
+                    }
+                    paginationItems += this._createPageItem(this.totalPages - 1, this.totalPages);
+                };
+
+                if (this.currentPage > ellipsisThreshold) {
+                    addFirstPageAndEllipsis();
+                }
+
+                const startPage = Math.max(0, this.currentPage - ellipsisOffset);
+                const endPage = Math.min(this.totalPages - 1, this.currentPage + ellipsisOffset);
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationItems += this._createPageItem(i, i + 1, i === this.currentPage);
+                }
+
+                if (this.currentPage < this.totalPages - (ellipsisThreshold + 1)) {
+                    addLastPageAndEllipsis();
+                }
+
+                return paginationItems;
+            }
+
+            _createNavItem(page, content, className, isEnabled) {
+                return `<li class="page-item ${className} ${isEnabled ? '' : 'disabled'}"> <a class="page-link" href="#" data-page="${page}">${content}</a> </li>`;
+            }
+
+            _createPageItem(page, text, isActive = false) {
+                return `<li class="page-item ${isActive ? 'active' : ''}"> <a class="page-link" href="#" data-page="${page}">${text}</a> </li>`;
+            }
+
+            _createDisabledItem(text) {
+                return `<li class="page-item disabled"> <span class="page-link">${text}</span> </li>`;
+            }
+        }
+
+        async function loadOrders(page, size, search) {
+            blockCard();
+            try {
+                const response = await fetch(`${basePath}order/getAllOrders?page=${page}&size=${size}&search=${search}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const tableBody = document.getElementById('table-body');
+                tableBody.innerHTML = '';
+
+                data.content.forEach(order => {
+                    const row = `
+                        <tr data-order-id="${order.id}">
+                            <td class="text-center">${order.id}</td>
+                            <td class="text-center">${formatDate(order.startDate)} ${formatTime(order.startTime)}</td>
+                            <td class="text-center">${formatDuration(order.totalDuration)}</td>
+                            <td class="text-center">${order.price}</td>
+                            <td class="text-center">${order.status}</td>
+                            <td class="text-center">${order.customerName}</td>
+                            <td class="text-center">
+                                <button class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editOrder">
+                                    <i class="ti ti-pencil"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+                if (data.content.length === 0) {
+                    tableBody.innerHTML += `<tr>
+                            <td colspan="7" class="text-center">Нет данных</td>
+                        </tr>`;
+                }
+
+                // Attach event listeners after adding new elements
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const orderId = button.closest('tr').dataset.orderId;
+                        loadOrderData(orderId);
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const orderId = button.closest('tr').dataset.orderId;
+                        document.getElementById('confirm-delete-btn').dataset.orderId = orderId;
+                    });
+                });
+
+                // Pagination
+                const totalPages = data.totalPages;
+                const pagination = new Pagination('pagination', (page) => {
+                    if (page !== currentPage) {
+                        currentPage = page;
+                        loadOrders(currentPage, pageSize, currentSearch);
+                    }
+                });
+                pagination.setup(totalPages, currentPage);
+
+            } catch (error) {
+                console.error("Ошибка при загрузке данных:", error);
+                showToast('error', 'Ошибка', "Ошибка при загрузке данных");
+            } finally {
+                unblockCard();
+            }
+        }
+
+        function formatDate(dateArray) {
+            if (Array.isArray(dateArray) && dateArray.length === 3) {
+                const year = dateArray[0];
+                const month = String(dateArray[1]).padStart(2, '0');
+                const day = String(dateArray[2]).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            return '';
+        }
+
+        function formatTime(timeArray) {
+            if (Array.isArray(timeArray) && timeArray.length >= 2) {
+                const hours = String(timeArray[0]).padStart(2, '0');
+                const minutes = String(timeArray[1]).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+            return '';
+        }
+
+        function formatDuration(duration) {
+            if (duration) {
+                const totalSeconds = Math.round(duration);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                return `${hours} ч ${minutes} мин`;
+            }
+            return '';
+        }
+
+        async function loadCustomersToModal() {
+            try {
+                const response = await fetch(`${basePath}customer/getAllCustomers?page=0&size=1000&search=`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const orderCustomerIdSelect = document.getElementById('orderCustomerId');
+                orderCustomerIdSelect.innerHTML = '';
+                data.content.forEach(customer => {
+                    const option = new Option(`${customer.name} ${customer.surname}`, customer.id);
+                    orderCustomerIdSelect.add(option);
+                });
+            } catch (error) {
+                console.error("Ошибка при загрузке данных о клиентах:", error);
+                showToast('error', 'Ошибка', "Ошибка при загрузке данных о клиентах");
+            }
+        }
+
+        async function loadServicesToModal() {
+            try {
+                const response = await fetch(`${basePath}cleaning/getAllServices?page=0&size=1000&search=`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                window.servicesData = data.content;
+            } catch (error) {
+                console.error("Ошибка при загрузке данных об услугах:", error);
+                showToast('error', 'Ошибка', "Ошибка при загрузке данных об услугах");
+            }
+        }
+
+        async function loadOrderData(orderId) {
+            try {
+                const response = await fetch(`${basePath}order/${orderId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const order = await response.json();
+                document.querySelector('#editOrderForm input[name="id"]').value = order.id;
+                document.getElementById('orderDate').value = formatDate(order.startDate);
+                document.getElementById('orderTime').value = formatTime(order.startTime);
+                document.getElementById('orderStatus').value = order.status;
+                document.getElementById('orderCustomerId').value = order.customerId;
+                document.getElementById('modal-title').textContent = 'Изменить Заказ';
+                const servicesTableBody = document.querySelector('#servicesTable tbody');
+                servicesTableBody.innerHTML = '';
+                order.orderCleanings.forEach(cleaning => {
+                    addServiceToTable(cleaning);
+                });
+            } catch (error) {
+                console.error("Ошибка при загрузке данных о заказе:", error);
+                showToast('error', 'Ошибка', "Ошибка при загрузке данных о заказе");
+            }
+        }
+
+        function addServiceToTable(cleaning) {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <select class="form-select cleaning-select" name="orderCleanings.serviceId">
+                        ${window.servicesData.map(s => `<option value="${s.id}" ${cleaning && s.id === cleaning.cleaningId ? 'selected' : ''}>${s.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" class="form-control" name="orderCleanings.numberUnits" value="${cleaning ? cleaning.numberUnits : ''}"></td>
+                <td>
+                    <button class="btn btn-danger btn-sm remove-cleaning-btn" type="button">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </td>
+            `;
+            document.querySelector('#servicesTable tbody').appendChild(newRow);
+
+            // Remove old event listener before adding a new one
+            document.querySelector('#servicesTable tbody').removeEventListener('click', handleRemoveCleaning);
+            document.querySelector('#servicesTable tbody').addEventListener('click', handleRemoveCleaning);
+        }
+
+        function handleRemoveCleaning(event) {
+            if (event.target.classList.contains('remove-cleaning-btn') || event.target.closest('.remove-cleaning-btn')) {
+                event.target.closest('tr').remove();
+            }
+        }
+
+        document.getElementById('addService').addEventListener('click', () => {
+            addServiceToTable();
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const orderId = document.getElementById('confirm-delete-btn').dataset.orderId;
+            try {
+                const response = await fetch(`${basePath}order/${orderId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                document.getElementById('deleteConfirmModal').querySelector('.btn-close').click();
+                loadOrders(currentPage, pageSize, currentSearch);
+            } catch (error) {
+                console.error("Ошибка при удалении заказа:", error);
+                showToast('error', 'Ошибка', "Ошибка при удалении заказа");
+            }
+        });
+
+        // Обработчик изменения значения в поле "Показать"
+        document.getElementById('pageSize').addEventListener('change', () => {
+            pageSize = document.getElementById('pageSize').value;
+            currentPage = 0;
+            loadOrders(currentPage, pageSize, currentSearch);
+        });
+
+        // Обработчик изменения значения в поле "Поиск"
+        document.getElementById('search').addEventListener('input', () => {
+            currentSearch = document.getElementById('search').value;
+            currentPage = 0;
+            loadOrders(currentPage, pageSize, currentSearch);
+        });
+
+        // Обработчик нажатия на кнопку "Добавить Заказ"
+        document.getElementById('createEntity').addEventListener('click', () => {
+            document.getElementById('editOrderForm').reset();
+            document.querySelector('#servicesTable tbody').innerHTML = '';
+            document.getElementById('modal-title').textContent = 'Создать Заказ';
+        });
+
+        document.getElementById('editOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const orderCleanings = [];
+            document.querySelectorAll('#servicesTable tbody tr').forEach(row => {
+                orderCleanings.push({
+                    cleaningId: row.querySelector('select[name="orderCleanings.serviceId"]').value,
+                    numberUnits: row.querySelector('input[name="orderCleanings.numberUnits"]').value,
+                });
+            });
+
+            const orderData = {
+                id: document.querySelector('#editOrderForm input[name="id"]').value,
+                startDate: document.getElementById('orderDate').value,
+                startTime: document.getElementById('orderTime').value,
+                status: document.getElementById('orderStatus').value,
+                customerId: document.getElementById('orderCustomerId').value,
+                orderCleanings: orderCleanings
+            };
+
+            const method = orderData.id ? 'PUT' : 'POST';
+            const url = orderData.id ? `${basePath}order/update` : `${basePath}order/create`;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    displayValidationErrors(errorData);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                document.querySelector('#editOrder .btn-close').click();
+                loadOrders(currentPage, pageSize, currentSearch);
+
+                showToast('success', 'Успех', `Заказ успешно ${orderData.id ? 'обновлен' : 'создан'}!`);
+            } catch (error) {
+                console.error("Ошибка при сохранении заказа:", error);
+                showToast('error', 'Ошибка', "Ошибка при сохранении заказа");
+            }
+        });
+
+        function blockCard(message = 'Загрузка...') {
+            const cardBlock = document.getElementById('card-block');
+            cardBlock.style.position = 'relative';
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-overlay';
+            loadingDiv.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            loadingDiv.innerHTML = `
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">${message}</span>
+                </div>
+            `;
+            cardBlock.appendChild(loadingDiv);
+        }
+
+        function unblockCard() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
+        }
+
+        function showToast(type, title, message) {
+            toastr.options = {
+                closeButton: true,
+                debug: false,
+                newestOnTop: false,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                preventDuplicates: false,
+                onclick: null,
+                showDuration: '300',
+                hideDuration: '1000',
+                timeOut: '5000',
+                extendedTimeOut: '1000',
+                showEasing: 'swing',
+                hideEasing: 'linear',
+                showMethod: 'fadeIn',
+                hideMethod: 'fadeOut'
+            };
+
+            toastr[type](message, title);
+        }
+
+        function displayValidationErrors(errors) {
+            const form = document.getElementById('editOrderForm');
+            // Remove existing error messages
+            form.querySelectorAll('.error-message').forEach(el => el.remove());
+            for (const field in errors) {
+                if (errors.hasOwnProperty(field)) {
+                    const errorMessage = errors[field];
+                    const inputField = form.querySelector(`[name="${field}"]`);
+                    if (inputField) {
+                        const errorSpan = document.createElement('span');
+                        errorSpan.className = 'text-danger error-message';
+                        errorSpan.textContent = errorMessage;
+                        inputField.classList.add('is-invalid');
+                        inputField.parentElement.appendChild(errorSpan);
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrders(currentPage, pageSize, currentSearch);
+            loadCustomersToModal();
+            loadServicesToModal();
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

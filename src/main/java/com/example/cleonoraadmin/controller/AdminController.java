@@ -6,11 +6,13 @@ import com.example.cleonoraadmin.model.admin.AdminUserProfileRequest;
 import com.example.cleonoraadmin.model.admin.AdminUserRequest;
 import com.example.cleonoraadmin.model.admin.AdminUserResponse;
 import com.example.cleonoraadmin.service.AdminUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,8 +22,25 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+
+/**
+AdminController
+- adminUserService: AdminUserService
+--
++ addAttributes(Model model): void
++ admin(): ModelAndView
++ getAllAdminUsers(int page, int size, String search): Page<AdminUserResponse>
++ getAdminUser(Long id): ResponseEntity<?>
++ createAdminUser(AdminUserRequest adminUserRequest): ResponseEntity<?>
++ updateEntity(Long id, AdminUserRequest adminUserRequest): ResponseEntity<?>
++ deleteEntity(Long id): ResponseEntity<?>
++ uploadImage(MultipartFile file, Principal principal): ResponseEntity<?>
+ */
 
 @Controller
 @RequestMapping("/admin")
@@ -42,31 +61,48 @@ public class AdminController {
         return new ModelAndView("user/usersPage");
         }
 
+
     @GetMapping("/getAllManagerUsers")
     public @ResponseBody Page<AdminUserResponse> getAllAdminUsers(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "") String search,
-                                       @RequestParam(defaultValue = "5") Integer size) {
+                                                                  @RequestParam(defaultValue = "") String search,
+                                                                  @RequestParam(defaultValue = "5") Integer size,
+                                                                  HttpServletRequest request) {
+
+        String clientIP = getClientIP(request);
+        System.out.println("IP клиента: " + clientIP);
+
         return adminUserService.getPageAllAdminUsers(page, size, search);
+    }
+
+    public String getClientIP(HttpServletRequest request) {
+        String remoteAddr = "";
+
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+
+        return remoteAddr;
     }
 
     @GetMapping("/{id}")
     public @ResponseBody ResponseEntity<?> getAdminUser(@PathVariable Long id) {
-        Optional<AdminUser> user = adminUserService.getAdminUserById(id);
-        return user.map(ResponseEntity::ok).orElse(ResponseEntity.badRequest().build());
+        AdminUserResponse user = adminUserService.getAdminUserResponseById(id);
+        if (user == null) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Произошла ошибка, пользователь не найден, повторите попытку");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+        return ResponseEntity.ok(user);
     }
+
 
     @PostMapping({"/create"})
     public ResponseEntity<?> createAdminUser(@Valid @RequestBody AdminUserRequest adminUserRequest) {
-        try {
-            AdminUserResponse createdUser = adminUserService.saveNewUserFromRequest(adminUserRequest);
-            return ResponseEntity.ok(createdUser);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Ошибка базы данных при создании пользователя: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body("Ошибка: Дублирующаяся запись. Пользователь с таким email уже существует.");
-        } catch (Exception e) {
-            log.error("Ошибка при создании пользователя: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().body("Произошла непредвиденная ошибка.");
-        }
+        AdminUserResponse createdUser = adminUserService.saveNewUserFromRequest(adminUserRequest);
+        return ResponseEntity.ok(createdUser);
     }
 
 
@@ -121,7 +157,7 @@ public class AdminController {
     @GetMapping("/getProfile")
     public @ResponseBody ResponseEntity<?> getProfile(Principal principal) {
         if (principal != null) {
-            return ResponseEntity.ok(adminUserService.findByUsername(principal.getName()));
+            return ResponseEntity.ok(adminUserService.getAdminUserProfile(principal.getName()));
         }
         return ResponseEntity.badRequest().build();
     }

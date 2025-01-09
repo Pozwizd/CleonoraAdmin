@@ -11,18 +11,39 @@ import com.example.cleonoraadmin.model.admin.AdminUserRequest;
 import com.example.cleonoraadmin.model.admin.AdminUserResponse;
 import com.example.cleonoraadmin.repository.AdminUserRepository;
 import com.example.cleonoraadmin.service.AdminUserService;
+import com.example.cleonoraadmin.specification.AdminUserSpecification;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.example.cleonoraadmin.specification.AdminUserSpecification;
 
 import java.util.Optional;
 
+
+/**
+AdminUserServiceImp
+- adminUserRepository: AdminUserRepository
+- adminUserMapper: AdminUserMapper
+- uploadFile: UploadFile
+--
++ findByUsername(username: String): AdminUser
++ saveNewUser(adminUser: AdminUser): AdminUser
++ getPageAllAdminUsers(page: int, size: Integer, search: String): Page<AdminUserResponse>
++ ifUserMoreThan(i: int): boolean
++ getAdminUserById(id: Long): Optional<AdminUser>
++ getAdminUserResponseById(id: Long): AdminUserResponse
++ saveNewUserFromRequest(adminUserRequest: AdminUserRequest): AdminUserResponse
++ updateAdminUser(id: Long, adminUserRequest: AdminUserRequest): AdminUserResponse
++ deleteAdminUserById(id: Long): boolean
++ loadUserByUsername(username: String): UserDetails
++ getAdminUserProfile(username: String): AdminUserProfileResponse
++ updateAdminUserProfile(adminUserRequest: AdminUserProfileRequest): AdminUserProfileResponse
+ */
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -41,18 +62,21 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
 
     @Override
     public AdminUser saveNewUser(AdminUser adminUser) {
+
         return adminUserRepository.save(adminUser);
     }
 
     @Override
     public Page<AdminUserResponse> getPageAllAdminUsers(int page, Integer size, String search) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Order.asc("id")));
 
         return adminUserMapper.adminUsertoResponsePage(adminUserRepository.findAll(
                 AdminUserSpecification.byActive()
-                        .and(AdminUserSpecification.search(search).and(AdminUserSpecification.getAllExceptRole(AdminRole.ADMIN))),
+                        .and(AdminUserSpecification.search(search)
+                                .and(AdminUserSpecification.getAllExceptRole(AdminRole.ADMIN))),
                 pageRequest));
     }
+
 
     @Override
     public boolean ifUserMoreThan(int i) {
@@ -61,6 +85,11 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
 
     public Optional<AdminUser> getAdminUserById(Long id) {
         return adminUserRepository.findById(id);
+    }
+
+    @Override
+    public AdminUserResponse getAdminUserResponseById(Long id) {
+        return adminUserMapper.adminUsertoResponse(getAdminUserById(id).orElse(null));
     }
 
     @Override
@@ -73,7 +102,9 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
     @Override
     public AdminUserResponse updateAdminUser(Long id, AdminUserRequest adminUserRequest) {
         AdminUser adminUser = adminUserMapper.adminUserResponsetoEntity(adminUserRequest);
-        adminUser.setId(id);
+        adminUserRepository.findById(id).ifPresent(user -> {
+            adminUser.setAvatar(user.getAvatar());
+        });
         return adminUserMapper.adminUsertoResponse(saveNewUser(adminUser));
     }
 
@@ -98,6 +129,11 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
     @Override
     public AdminUserProfileResponse updateAdminUserProfile(AdminUserProfileRequest adminUserRequest) {
         return adminUserMapper.adminUserToProfileResponse(saveNewUser(adminUserMapper.adminUserProfileRequestToEntity(adminUserRequest, uploadFile)));
+    }
+
+    @Override
+    public Optional<AdminUser> getUserByEmail(String email) {
+        return adminUserRepository.findByEmail(email);
     }
 
 

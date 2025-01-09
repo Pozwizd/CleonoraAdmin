@@ -1,689 +1,195 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template/layout.html">
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="template/layout.html">
 
 <body>
 
-<div layout:fragment="content">
+    <div layout:fragment="content">
 
-    <div class="d-flex flex-row justify-content-center align-items-center">
-        <h4 class="fw-bold pt-3">Категории</h4>
-    </div>
+        <div class="d-flex flex-row justify-content-center align-items-center">
+            <h4 class="fw-bold pt-3">Категории</h4>
+        </div>
 
-    <div class="card" id="card-block">
+        <div class="card" id="card-block">
 
-        <div class="card-header py-2 d-flex align-items-center">
-            <div class="d-flex justify-content-end flex-grow-1 m-lg-2">
-                <div class="search-input-wrapper col-md-4">
-                    <label class="d-flex align-items-center gap-2 w-100">
-                        Поиск:
-                        <input type="text" id="search" class="form-control" placeholder="Поиск...">
-                    </label>
+
+            <div class="card-header py-2">
+                <div class="row w-100 align-items-center justify-content-end">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label class="d-flex align-items-center gap-2 w-100">
+                            Поиск:
+                            <input type="text" id="search" class="form-control" placeholder="Поиск...">
+                        </label>
+                    </div>
+
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#editCategory">
+                            <i class="ti ti-plus"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="d-flex ms-auto">
-                <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#editCategory">
-                    <i class="ti ti-plus"></i>
-                </button>
-            </div>
-        </div>
 
-        <div class="card-body">
-            <div>
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                        <tr id="table-head">
-                            <th class="text-center">ID</th>
-                            <th class="text-center">Название</th>
-                            <th class="text-center">Описание</th>
-                            <th class="text-center">Действия</th>
-                        </tr>
-                        </thead>
-                        <tbody id="table-body"></tbody>
-                    </table>
+            <div class="card-body">
+                <div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr id="table-head">
+                                    <th class="text-center">ID</th>
+                                    <th class="text-center">Название</th>
+                                    <th class="text-center">Описание</th>
+                                    <th class="text-center">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card-footer d-flex justify-content-between align-items-center pb-0">
-            <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
-                Показать:
-                <select id="pageSize" class="form-control">
-                    <option value="5" selected>5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                </select>
-            </label>
-            <nav aria-label="Навигация по страницам">
-                <ul class="pagination" id="pagination">
-                </ul>
-            </nav>
-        </div>
-
-        <!-- Индикатор загрузки -->
-        <div id="loading-indicator" class="d-none justify-content-center align-items-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Загрузка...</span>
+            <div class="card-footer d-flex justify-content-between align-items-center pb-0">
+                <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
+                    Показать:
+                    <select id="pageSize" class="form-control">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </label>
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination" id="pagination">
+                    </ul>
+                </nav>
             </div>
-        </div>
 
-        <!-- Модальное окно для создания/редактирования категории -->
-        <div class="modal fade" id="editCategory" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-simple modal-edit-category">
-                <div class="modal-content p-3 p-md-5">
-                    <div class="modal-body">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                        <div class="text-center mb-4">
-                            <h3 class="modal-title mb-2">Создать Категорию</h3>
+            <!-- Индикатор загрузки -->
+            <div id="loading-indicator" class="d-none justify-content-center align-items-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+
+            <!-- Модальное окно для создания/редактирования категории -->
+            <div class="modal fade" id="editCategory" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-simple modal-edit-category">
+                    <div class="modal-content p-3 p-md-5">
+                        <div class="modal-body">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                            <div class="text-center mb-4">
+                                <h3 class="modal-title mb-2">Создать Категорию</h3>
+                            </div>
+                            <form id="editCategoryForm" class="row g-3" onsubmit="return false">
+                                <input type="hidden" id="categoryId" name="id">
+                                <!-- Название -->
+                                <div class="col-12">
+                                    <label class="form-label" for="categoryName">Название</label>
+                                    <input type="text" id="categoryName" name="name" class="form-control"
+                                        placeholder="Название категории" />
+                                </div>
+
+                                <!-- Описание -->
+                                <div class="col-12">
+                                    <label class="form-label" for="categoryDescription">Описание</label>
+                                    <textarea id="categoryDescription" name="description" class="form-control"
+                                        placeholder="Описание категории"></textarea>
+                                </div>
+
+                                <!-- Кнопки отправки и отмены -->
+                                <div class="col-12 text-center">
+                                    <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
+                                    <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal"
+                                        aria-label="Закрыть">
+                                        Отменить
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <form id="editCategoryForm" class="row g-3" onsubmit="return false">
-                            <!-- Название -->
-                            <div class="col-12">
-                                <label class="form-label" for="categoryName">Название</label>
-                                <input
-                                        type="text"
-                                        id="categoryName"
-                                        name="name"
-                                        class="form-control"
-                                        placeholder="Название категории"
-                                />
-                            </div>
-
-                            <!-- Описание -->
-                            <div class="col-12">
-                                <label class="form-label" for="categoryDescription">Описание</label>
-                                <textarea
-                                        id="categoryDescription"
-                                        name="description"
-                                        class="form-control"
-                                        placeholder="Описание категории"
-                                ></textarea>
-                            </div>
-
-                            <!-- Кнопки отправки и отмены -->
-                            <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
-                                <button
-                                        type="reset"
-                                        class="btn btn-label-secondary"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Закрыть"
-                                >
-                                    Отменить
-                                </button>
-                            </div>
-                        </form>
+                    </div>
+                </div>
+            </div>
+            <script>
+                const textarea = document.querySelector('#categoryDescription')
+                if (textarea) {
+                    autosize(textarea);
+                }
+            </script>
+            <!-- Модальное окно подтверждения удаления -->
+            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            Вы уверены, что хотите удалить эту категорию?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-label-secondary"
+                                data-bs-dismiss="modal">Отменить</button>
+                            <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Модальное окно подтверждения удаления -->
-        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        Вы уверены, что хотите удалить эту категорию?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Отменить</button>
-                        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script th:inline="javascript">
-
-        const contextPath = '[[@{/}]]'.replaceAll("\"", "");
-
-        class APIService {
-            constructor(baseURL) {
-                this.baseURL = baseURL;
-            }
-
-            async request(endpoint, options = {}) {
-                const url = `${this.baseURL}${endpoint}`;
-                const response = await fetch(url, options);
-
-                if (!response.ok) {
-                    let errorData;
-                    try {
-                        errorData = await response.json();
-                    } catch {
-                        errorData = {message: 'Неизвестная ошибка'};
-                    }
-                    throw {status: response.status, data: errorData};
-                }
-
-                const contentType = response.headers.get('Content-Type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    return null;
-                }
-            }
-
-            async getAllCategories(page = 0, size = 5, search = '') {
-                const encodedSearch = encodeURIComponent(search);
-                return this.request(`category/getAllCategories?page=${page}&size=${size}&search=${encodedSearch}`);
-            }
-
-            async getCategoryById(categoryId) {
-                return this.request(`category/${categoryId}`);
-            }
-
-            async createCategory(categoryData) {
-                return this.request('category/create', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(categoryData),
-                });
-            }
-
-            async updateCategory(categoryId, categoryData) {
-                return this.request(`category/${categoryId}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(categoryData),
-                });
-            }
-
-            async deleteCategory(categoryId) {
-                return this.request(`category/${categoryId}`, {
-                    method: 'DELETE',
-                });
-            }
-        }
-
-        // Класс Pagination для управления пагинацией
-        class Pagination {
-            constructor(containerId, onPageChange) {
-                this.container = document.getElementById(containerId);
-                this.onPageChange = onPageChange;
-                this.currentPage = 0;
-                this.totalPages = 0;
-
-                // Делегирование событий для кликов по элементам пагинации
-                this.container.addEventListener('click', (e) => {
-                    const a = e.target.closest('a');
-                    if (a && this.container.contains(a)) {
-                        e.preventDefault();
-                        const page = a.getAttribute('data-page');
-                        if (page !== null) {
-                            const pageNumber = parseInt(page, 10);
-                            if (pageNumber >= 0 && pageNumber < this.totalPages) {
-                                this.onPageChange(pageNumber);
-                            }
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', () => {
+                const app = new GenericCRUDApp({
+                    api: {
+                        baseURL: '[[@{/}]]'.replaceAll("\"", ""),
+                        endpoints: {
+                            getAll: 'category/getAllCategories',
+                            getById: 'category/{id}',
+                            create: 'category/create',
+                            update: 'category/{id}',
+                            delete: 'category/{id}'
                         }
-                    }
-                });
-            }
-
-            setup(totalPages, currentPage) {
-                this.currentPage = currentPage;
-                this.totalPages = totalPages;
-                this.render();
-            }
-
-            render() {
-                if (this.totalPages === 0) {
-                    this.container.innerHTML = '';
-                    return;
-                }
-
-                let paginationItems = '';
-
-                // Первая страница
-                if (this.currentPage > 0) {
-                    paginationItems += this.createPaginationItem(0, '<i class="ti ti-chevrons-left ti-xs"></i>', 'first');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevrons-left ti-xs"></i>', 'first');
-                }
-
-                // Предыдущая страница
-                if (this.currentPage > 0) {
-                    paginationItems += this.createPaginationItem(this.currentPage - 1, '<i class="ti ti-chevron-left ti-xs"></i>', 'prev');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevron-left ti-xs"></i>', 'prev');
-                }
-
-                // Первая страница и "..."
-                if (this.currentPage > 2) {
-                    paginationItems += this.createPaginationItem(0, '1');
-                    if (this.currentPage > 3) {
-                        paginationItems += this.createDisabledPaginationItem('...');
-                    }
-                }
-
-                // Текущая страница и соседние
-                const startPage = Math.max(0, this.currentPage - 1);
-                const endPage = Math.min(this.totalPages - 1, this.currentPage + 1);
-                for (let i = startPage; i <= endPage; i++) {
-                    paginationItems += this.createPaginationItem(i, i + 1, '', i === this.currentPage);
-                }
-
-                // Последняя страница и "..."
-                if (this.currentPage < this.totalPages - 3) {
-                    if (this.currentPage < this.totalPages - 4) {
-                        paginationItems += this.createDisabledPaginationItem('...');
-                    }
-                    paginationItems += this.createPaginationItem(this.totalPages - 1, this.totalPages);
-                }
-
-                // Следующая страница
-                if (this.currentPage < this.totalPages - 1) {
-                    paginationItems += this.createPaginationItem(this.currentPage + 1, '<i class="ti ti-chevron-right ti-xs"></i>', 'next');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevron-right ti-xs"></i>', 'next');
-                }
-
-                // Последняя страница
-                if (this.currentPage < this.totalPages - 1) {
-                    paginationItems += this.createPaginationItem(this.totalPages - 1, '<i class="ti ti-chevrons-right ti-xs"></i>', 'last');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevrons-right ti-xs"></i>', 'last');
-                }
-
-                this.container.innerHTML = paginationItems;
-            }
-
-            createPaginationItem(page, text, className = '', isActive = false) {
-                const activeClass = isActive ? 'active' : '';
-                const additionalClass = className ? className : '';
-                if (isActive) {
-                    return `
-                        <li class="page-item ${additionalClass} ${activeClass}">
-                            <span class="page-link">${text}</span>
-                        </li>
-                    `;
-                }
-                return `
-                        <li class="page-item ${additionalClass} ${activeClass}">
-                            <a class="page-link" href="#" data-page="${page}">${text}</a>
-                        </li>
-                    `;
-            }
-
-            createDisabledPaginationItem(text, className = '') {
-                const additionalClass = className ? className : '';
-                return `
-                        <li class="page-item disabled ${additionalClass}">
-                            <span class="page-link">${text}</span>
-                        </li>
-                    `;
-            }
-        }
-
-        // CategoryTable: Класс для управления таблицей категорий
-        class CategoryTable {
-            constructor(tableBodyId, onEdit, onDelete) {
-                this.tableBody = document.getElementById(tableBodyId);
-                this.onEdit = onEdit;
-                this.onDelete = onDelete;
-            }
-
-            populate(categories) {
-                this.tableBody.innerHTML = ''; // Очистка таблицы
-
-                if (categories.length === 0) {
-                    const row = document.createElement('tr');
-                    const cell = document.createElement('td');
-                    cell.colSpan = 4;
-                    cell.className = 'text-center';
-                    cell.textContent = 'Нет данных для отображения';
-                    row.appendChild(cell);
-                    this.tableBody.appendChild(row);
-                    return;
-                }
-
-                categories.forEach(category => {
-                    const row = document.createElement('tr');
-
-                    // ID
-                    const idCell = document.createElement('td');
-                    idCell.className = 'text-center';
-                    idCell.textContent = category.id;
-                    row.appendChild(idCell);
-
-                    // Название
-                    const nameCell = document.createElement('td');
-                    nameCell.className = 'text-center';
-                    nameCell.textContent = category.name;
-                    row.appendChild(nameCell);
-
-                    // Описание
-                    const descCell = document.createElement('td');
-                    descCell.className = 'text-center';
-                    descCell.textContent = category.description;
-                    row.appendChild(descCell);
-
-                    // Actions
-                    const actionsCell = document.createElement('td');
-                    actionsCell.className = 'text-center';
-
-                    const editButton = document.createElement('button');
-                    editButton.className = 'btn btn-sm btn-primary me-2';
-                    editButton.textContent = 'Редактировать';
-                    editButton.addEventListener('click', () => this.onEdit(category.id));
-                    actionsCell.appendChild(editButton);
-
-                    const deleteButton = document.createElement('button');
-                    deleteButton.className = 'btn btn-sm btn-danger';
-                    deleteButton.textContent = 'Удалить';
-                    deleteButton.addEventListener('click', () => this.onDelete(category.id));
-                    actionsCell.appendChild(deleteButton);
-
-                    row.appendChild(actionsCell);
-                    this.tableBody.appendChild(row);
-                });
-            }
-        }
-
-        // CategoryModal: Класс для управления модальным окном создания/редактирования категории
-        class CategoryModal {
-            constructor(modalId, formId, onSubmit) {
-                this.modal = document.getElementById(modalId);
-                this.form = document.getElementById(formId);
-                this.onSubmit = onSubmit;
-                this.isEditMode = false;
-                this.editCategoryId = null;
-
-                // Элементы формы
-                this.nameInput = this.form.querySelector('input[name="name"]');
-                this.descriptionInput = this.form.querySelector('textarea[name="description"]');
-
-                // Обработчики событий
-                this.form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleSubmit();
-                });
-
-                this.form.addEventListener('reset', () => {
-                    this.clearForm();
-                });
-
-                this.initializeModal();
-            }
-
-            open(isEdit = false, categoryData = null) {
-                this.isEditMode = isEdit;
-                if (isEdit && categoryData) {
-                    this.editCategoryId = categoryData.id;
-                    this.nameInput.value = categoryData.name;
-                    this.descriptionInput.value = categoryData.description;
-                } else {
-                    this.clearForm();
-                }
-
-                const modalTitle = this.modal.querySelector('.modal-title');
-                modalTitle.textContent = isEdit ? 'Редактировать Категорию' : 'Создать Категорию';
-                this.modalInstance.show();
-            }
-
-            clearForm() {
-                this.form.reset();
-                this.removeValidationErrors();
-                this.editCategoryId = null;
-                this.isEditMode = false;
-            }
-
-            removeValidationErrors() {
-                const errorMessages = this.form.querySelectorAll('.error-message');
-                errorMessages.forEach(msg => msg.remove());
-            }
-
-            async handleSubmit() {
-                this.removeValidationErrors();
-
-                const categoryData = {
-                    name: this.nameInput.value.trim(),
-                    description: this.descriptionInput.value.trim(),
-                };
-
-                try {
-                    await this.onSubmit(this.isEditMode, this.editCategoryId, categoryData);
-                    this.close(); // Закрываем модальное окно после успешного создания/редактирования
-                    $('.modal-backdrop').remove();
-                } catch (error) {
-                    if (error.status === 400 && error.data) {
-                        this.displayValidationErrors(error.data);
-                    } else {
-                        console.error('Ошибка при сохранении категории:', error);
-                    }
-                }
-            }
-
-            displayValidationErrors(errors) {
-                for (const field in errors) {
-                    if (errors.hasOwnProperty(field)) {
-                        const errorMessage = errors[field];
-                        const inputField = this.form.querySelector(`[name="${field}"]`);
-                        if (inputField) {
-                            const errorSpan = document.createElement('span');
-                            errorSpan.className = 'text-danger error-message';
-                            errorSpan.textContent = errorMessage;
-                            inputField.classList.add('is-invalid');
-                            inputField.parentElement.appendChild(errorSpan);
-                        }
-                    }
-                }
-            }
-
-            close() {
-                this.modalInstance.hide();
-            }
-
-            initializeModal() {
-                // Инициализация Bootstrap Modal
-                const bootstrapModal = new bootstrap.Modal(this.modal, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                this.modalInstance = bootstrapModal;
-            }
-        }
-
-        // DeleteConfirmModal: Класс для управления модальным окном подтверждения удаления
-        class DeleteConfirmModal {
-            constructor(modalId, confirmButtonId, onConfirm) {
-                this.modal = document.getElementById(modalId);
-                this.confirmButton = document.getElementById(confirmButtonId);
-                this.onConfirm = onConfirm;
-                this.entityId = null;
-
-                this.confirmButton.addEventListener('click', () => {
-                    if (this.entityId !== null) {
-                        this.onConfirm(this.entityId);
-                        this.close();
-                    }
-                });
-
-                this.initializeModal();
-            }
-
-            open(entityId) {
-                this.entityId = entityId;
-                this.modalInstance.show();
-            }
-
-            close() {
-                this.modalInstance.hide();
-                this.entityId = null;
-            }
-
-            initializeModal() {
-                // Инициализация Bootstrap Modal
-                const bootstrapModal = new bootstrap.Modal(this.modal, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                this.modalInstance = bootstrapModal;
-            }
-        }
-
-        class CategoryTableApp {
-            constructor(config) {
-                this.apiService = new APIService(config.apiBaseURL);
-                this.categoryTable = new CategoryTable(config.tableBodyId, this.handleEdit.bind(this), this.handleDelete.bind(this));
-                this.pagination = new Pagination(config.paginationId, this.handlePageChange.bind(this));
-                this.categoryModal = new CategoryModal(config.modalId, config.formId, this.handleFormSubmit.bind(this));
-                this.deleteConfirmModal = new DeleteConfirmModal(config.deleteModalId, config.confirmDeleteBtnId, this.handleDeleteConfirm.bind(this));
-                this.searchInput = document.getElementById(config.searchInputId);
-                this.pageSizeSelect = document.getElementById(config.pageSizeSelectId);
-                this.createButton = document.getElementById(config.createButtonId);
-                this.loadingIndicator = document.getElementById(config.loadingIndicatorId);
-                this.currentPage = 0;
-                this.pageSize = parseInt(this.pageSizeSelect.value, 10);
-                this.searchQuery = '';
-
-                this.initialize();
-            }
-
-            initialize() {
-                // Инициализация модальных окон
-                this.categoryModal.initializeModal();
-                this.deleteConfirmModal.initializeModal();
-
-                // Загрузка начальных данных
-                this.fetchAndRenderCategories();
-
-                // Обработчик изменения размера страницы
-                this.pageSizeSelect.addEventListener('change', () => {
-                    this.pageSize = parseInt(this.pageSizeSelect.value, 10);
-                    this.currentPage = 0;
-                    this.fetchAndRenderCategories();
-                });
-
-                // Обработчик создания новой категории
-                this.createButton.addEventListener('click', () => {
-                    this.categoryModal.open(false);
-                });
-
-                // Обработчик поиска
-                this.searchInput.addEventListener('input', () => {
-                    this.searchQuery = this.searchInput.value.trim();
-                    this.currentPage = 0;
-                    this.fetchAndRenderCategories();
-                });
-            }
-
-            async blockCard(message = 'Загрузка...') {
-                $('#card-block').block({
-                    message: `<div class="spinner-border text-primary" role="status"></div><span class="ms-2">${message}</span>`,
-                    css: {
-                        backgroundColor: 'transparent',
-                        border: '0'
                     },
-                    overlayCSS: {
-                        opacity: 0.5
-                    }
+                    entityName: 'Категория',
+                    tableBodyId: 'table-body',
+                    paginationId: 'pagination',
+                    modalId: 'editCategory',
+                    formId: 'editCategoryForm',
+                    deleteModalId: 'deleteConfirmModal',
+                    confirmDeleteBtnId: 'confirm-delete-btn',
+                    searchInputId: 'search',
+                    pageSizeSelectId: 'pageSize',
+                    createButtonId: 'createEntity',
+                    loadingIndicatorId: 'loading-indicator',
+                    columns: [
+                        { key: 'id', title: 'ID' },
+                        { key: 'name', title: 'Название' },
+                        { key: 'description', title: 'Описание' }
+                    ],
+                    formFields: [
+                        { name: 'id', type: 'hidden' },
+                        { name: 'name', type: 'text', label: 'Название', required: true },
+                        { name: 'description', type: 'textarea', label: 'Описание', required: true }
+                    ],
+                    toastConfig: {
+                        positionClass: 'toast-top-right',
+                        timeOut: 5000,
+                        progressBar: true,
+                        closeButton: false
+                    },
+                    notificationKeyword: 'message'
                 });
-            }
 
-            async unblockCard() {
-                $('#card-block').unblock();
-            }
-
-            async fetchAndRenderCategories() {
-                try {
-                    await this.blockCard();
-                    const data = await this.apiService.getAllCategories(this.currentPage, this.pageSize, this.searchQuery);
-                    const categories = data.content;
-
-                    if (this.currentPage >= data.totalPages && data.totalPages > 0) {
-                        this.currentPage = data.totalPages - 1;
-                        const updatedData = await this.apiService.getAllCategories(this.currentPage, this.pageSize, this.searchQuery);
-                        this.categoryTable.populate(updatedData.content);
-                        this.pagination.setup(updatedData.totalPages, this.currentPage);
-                        return;
-                    }
-
-                    this.categoryTable.populate(categories);
-                    this.pagination.setup(data.totalPages, this.currentPage);
-                } catch (error) {
-                    console.error('Ошибка при загрузке категорий:', error);
-                } finally {
-                    await this.unblockCard();
+                const textarea = document.querySelector('#categoryDescription');
+                if (textarea) {
+                    autosize(textarea);
                 }
-            }
-
-            handlePageChange(newPage) {
-                this.currentPage = newPage;
-                this.fetchAndRenderCategories();
-            }
-
-            handleEdit(categoryId) {
-                this.apiService.getCategoryById(categoryId)
-                    .then(categoryData => {
-                        this.categoryModal.open(true, categoryData);
-                    })
-                    .catch(error => {
-                        console.error('Ошибка при получении данных категории:', error);
-                    });
-            }
-
-            handleDelete(categoryId) {
-                this.deleteConfirmModal.open(categoryId);
-            }
-
-            async handleDeleteConfirm(categoryId) {
-                try {
-                    await this.apiService.deleteCategory(categoryId);
-                    const dataAfterDeletion = await this.apiService.getAllCategories(this.currentPage, this.pageSize, this.searchQuery);
-                    if (dataAfterDeletion.content.length === 0 && this.currentPage > 0) {
-                        this.currentPage--;
-                    }
-                    this.fetchAndRenderCategories();
-                } catch (error) {
-                    console.error('Ошибка при удалении категории:', error);
-                }
-            }
-
-            async handleFormSubmit(isEditMode, categoryId, categoryData) {
-                try {
-                    if (isEditMode) {
-                        await this.apiService.updateCategory(categoryId, categoryData);
-                    } else {
-                        await this.apiService.createCategory(categoryData);
-                    }
-                    this.fetchAndRenderCategories();
-                } catch (error) {
-                    throw error;
-                }
-            }
-        }
-
-        // Инициализация приложения после загрузки DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = new CategoryTableApp({
-                apiBaseURL: `${contextPath}`,
-                tableBodyId: 'table-body',
-                paginationId: 'pagination',
-                modalId: 'editCategory',
-                formId: 'editCategoryForm',
-                deleteModalId: 'deleteConfirmModal',
-                confirmDeleteBtnId: 'confirm-delete-btn',
-                searchInputId: 'search',
-                pageSizeSelectId: 'pageSize',
-                createButtonId: 'createEntity',
-                loadingIndicatorId: 'loading-indicator'
             });
-        });
-    </script>
-    <script th:src="@{/assets/vendor/js/bootstrap.js}"></script>
-</div>
+        </script>
+
+        <script th:src="@{/customAssets/js/formCrudScript.js}"></script>
+    </div>
 
 
 </body>
+
 </html>
-
-
-

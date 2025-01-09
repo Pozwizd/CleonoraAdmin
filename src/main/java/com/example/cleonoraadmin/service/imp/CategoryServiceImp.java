@@ -12,8 +12,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,14 +32,26 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
+    public List<CategoryResponse> getAllCategories() {
+        return categoryMapper.toResponseList(categoryRepository.findAll());
+    }
+
+    @Override
     public Page<CategoryResponse> getPageAllCategories(int page, Integer size, String search) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Order.asc("id")));
         return categoryMapper.toResponsePage(categoryRepository.findAll(CategorySpecification.search(search), pageRequest));
     }
 
     @Override
     public Optional<Category> getCategoryById(Long id) {
         return categoryRepository.findById(id);
+    }
+
+    @Override
+    public CategoryResponse getCategoryResponseById(Long id){
+
+        Optional<Category> category = categoryRepository.findById(id);
+        return category.map(categoryMapper::toResponse).orElse(null);
     }
 
     @Override

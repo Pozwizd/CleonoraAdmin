@@ -13,7 +13,14 @@ import org.mapstruct.MappingConstants;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-
+/**
+AdminUserMapper
++ adminUserResponsetoEntity: AdminUserRequest -> AdminUser
++ adminUsertoResponse: AdminUser -> AdminUserResponse
++ toEntityList: List<AdminUserRequest> -> List<AdminUser>
++ toResponseList: List<AdminUser> -> List<AdminUserResponse>
++ adminUsertoResponsePage: Page<AdminUser> -> Page<AdminUserResponse>
+ */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AdminUserMapper {
 

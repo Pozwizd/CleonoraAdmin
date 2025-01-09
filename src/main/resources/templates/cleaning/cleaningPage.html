@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template/layout.html">
+
+<body>
+<div layout:fragment="content">
+
+    <div class="d-flex flex-row justify-content-center align-items-center">
+        <h4 class="fw-bold pt-3">Сервисы</h4>
+    </div>
+
+    <div class="card" id="card-block">
+
+        <div class="card-header py-2">
+            <div class="row w-100 align-items-center justify-content-end">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <label class="d-flex align-items-center gap-2 w-100">
+                        Поиск:
+                        <input type="text" id="search" class="form-control" placeholder="Поиск...">
+                    </label>
+                </div>
+
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#editService">
+                        <i class="ti ti-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card-body">
+            <div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr id="table-head">
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Название</th>
+                            <th class="text-center">Описание</th>
+                            <th class="text-center">Категория</th>
+                            <th class="text-center">Спецификации</th>
+                            <th class="text-center">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center pb-0">
+            <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
+                Показать:
+                <select id="pageSize" class="form-control">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                </select>
+            </label>
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination" id="pagination">
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="loading-indicator" class="d-none justify-content-center align-items-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+
+        <!-- Модальное окно для создания/редактирования сервиса -->
+        <div class="modal fade" id="editService" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-simple modal-edit-cleaning">
+                <div class="modal-content p-3 p-md-5">
+                    <div class="modal-body">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        <div class="text-center mb-4">
+                            <h3 class="modal-title mb-2">Создать Сервис</h3>
+                        </div>
+                        <form id="editServiceForm" class="row g-3" onsubmit="return false">
+                            <input type="hidden" id="serviceId" name="id">
+
+                            <div class="col-12">
+                                <label class="form-label" for="serviceName">Название</label>
+                                <input type="text" id="serviceName" name="name" class="form-control" placeholder="Название сервиса" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="serviceDescription">Описание</label>
+                                <textarea id="serviceDescription" name="description" class="form-control" placeholder="Описание сервиса"></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="serviceCategorySelect">Категория</label>
+                                <select id="serviceCategorySelect" name="categoryId" class="form-control select2">
+                                    <option value="" disabled selected>Выберите категорию</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="serviceSpecificationsSelect">Сервисные Спецификации</label>
+                                <select id="serviceSpecificationsSelect" name="serviceSpecificationsId" class="form-control select2">
+                                    <option value="" disabled selected>Выберите спецификацию</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
+                                <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Закрыть">
+                                    Отменить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script th:src="@{/assets/vendor/libs/select2/select2.js}"></script>
+
+        <!-- Модальное окно подтверждения удаления -->
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите удалить этот сервис?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Отменить</button>
+                        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new GenericCRUDApp({
+                api: {
+                    baseURL: '[[@{/}]]'.replaceAll("\"", ""),
+                    endpoints: {
+                        getAll: 'cleaning/getAllServices',
+                        getById: 'cleaning/{id}',
+                        create: 'cleaning/create',
+                        update: 'cleaning/{id}',
+                        delete: 'cleaning/{id}'
+                    },
+                    entityType: 'json'
+                },
+                entityName: 'Сервис',
+                tableBodyId: 'table-body',
+                paginationId: 'pagination',
+                modalId: 'editService',
+                formId: 'editServiceForm',
+                deleteModalId: 'deleteConfirmModal',
+                confirmDeleteBtnId: 'confirm-delete-btn',
+                searchInputId: 'search',
+                pageSizeSelectId: 'pageSize',
+                createButtonId: 'createEntity',
+                loadingIndicatorId: 'loading-indicator',
+                columns: [
+                    { key: 'id', title: 'ID' },
+                    { key: 'name', title: 'Название' },
+                    { key: 'description', title: 'Описание' },
+                    { key: 'categoryName', title: 'Категория' },
+                    { key: 'serviceSpecificationsName', title: 'Спецификации' }
+                ],
+                formFields: [
+                    { name: 'id', type: 'hidden' },
+                    { name: 'name', type: 'text', label: 'Название', required: true },
+                    { name: 'description', type: 'text', label: 'Описание' },
+                    { name: 'categoryId', type: 'select', label: 'Категория', required: true, selectId: 'serviceCategorySelect' },
+                    { name: 'serviceSpecificationsId', type: 'select', label: 'Спецификации', required: true, selectId: 'serviceSpecificationsSelect' }
+                ],
+                toastConfig: {
+                    positionClass: 'toast-top-right',
+                    timeOut: 10000,
+                    progressBar: true,
+                    closeButton: false
+                },
+                notificationKeyword: 'message'
+            });
+
+            // Загрузка категорий
+            const categorySelect = document.getElementById('serviceCategorySelect');
+            fetch( '[[@{/}]]'.replaceAll("\"", "")+'category/getAllCategoriesList') // Изменено: убрал / в начале
+                .then(response => response.json())
+                .then(categories => {
+                    categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        categorySelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке категорий:', error);
+                    app.showToast('error', 'Ошибка', 'Ошибка при загрузке категорий');
+                });
+
+            // Загрузка спецификаций
+            const specificationsSelect = document.getElementById('serviceSpecificationsSelect');
+            fetch( '[[@{/}]]'.replaceAll("\"", "")+'specifications/getAllSpecificationsAdmin') // Изменено: убрал / в начале
+                .then(response => response.json())
+                .then(specifications => {
+                    specifications.forEach(spec => {
+                        const option = document.createElement('option');
+                        option.value = spec.id;
+                        option.textContent = spec.name;
+                        specificationsSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке спецификаций:', error);
+                    app.showToast('error', 'Ошибка', 'Ошибка при загрузке спецификаций');
+                });
+
+            // Инициализация Select2 для обоих селектов
+            $('#serviceCategorySelect').select2({
+                dropdownParent: $('#editService'),
+                placeholder: 'Выберите категорию'
+            });
+
+            $('#serviceSpecificationsSelect').select2({
+                dropdownParent: $('#editService'),
+                placeholder: 'Выберите спецификацию'
+            });
+        });
+    </script>
+    <script th:src="@{/customAssets/js/formCrudScript.js}"></script>
+</div>
+
+
+</body>
+</html>

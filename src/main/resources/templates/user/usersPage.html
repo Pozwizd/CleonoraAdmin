@@ -1,843 +1,266 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template/layout.html">
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="template/layout.html">
 
 <body>
-<div layout:fragment="content">
+    <div layout:fragment="content">
 
-    <div class="d-flex flex-row justify-content-center align-items-center">
-        <h4 class="fw-bold pt-3">Пользователи</h4>
-    </div>
+        <h4 class="fw-bold py-3 mb-4">Пользователи</h4>
 
-    <div class="card" id="card-block">
+        <div class="card" id="card-block">
+            <div class="card-header py-2">
+                <div class="row w-100 align-items-center justify-content-end">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label class="d-flex align-items-center gap-2 w-100">
+                            Поиск:
+                            <input type="text" id="search" class="form-control" placeholder="Поиск...">
+                        </label>
+                    </div>
 
-        <div class="card-header py-2 d-flex align-items-center">
-            <div class="d-flex justify-content-end flex-grow-1 m-lg-2">
-                <div class="search-input-wrapper col-md-4">
-                    <label class="d-flex align-items-center gap-2 w-100">
-                        Поиск:
-                        <input type="text" id="search" class="form-control" placeholder="Поиск...">
-                    </label>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#entityModal">
+                            <i class="ti ti-plus"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="d-flex ms-auto">
-                <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" id="createEntity" data-bs-target="#entityModal">
-                    <i class="ti ti-plus"></i>
-                </button>
-            </div>
-        </div>
 
-        <div class="card-body">
-            <div>
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                        <tr id="table-head">
-                            <th class="text-center">ID</th>
-                            <th class="text-center">Имя Фамилия</th>
-                            <th class="text-center">Почта</th>
-                            <th class="text-center">Права</th>
-                            <th class="text-center">Действия</th>
-                        </tr>
-                        </thead>
-                        <tbody id="table-body"></tbody>
-                    </table>
+
+
+            <div class="card-body">
+                <div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr id="table-head">
+                                    <th class="text-center">ID</th>
+                                    <th class="text-center">Имя Фамилия</th>
+                                    <th class="text-center">Почта</th>
+                                    <th class="text-center">Права</th>
+                                    <th class="text-center">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card-footer d-flex justify-content-between align-items-center pb-0">
-            <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
-                Показать:
-                <select id="pageSize" class="form-control">
-                    <option value="5" selected>5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                </select>
-            </label>
-            <nav aria-label="Навигация по страницам">
-                <ul class="pagination" id="pagination">
-                </ul>
-            </nav>
-        </div>
-
-        <!-- Индикатор загрузки -->
-        <div id="loading-indicator" class="d-none justify-content-center align-items-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Загрузка...</span>
+            <div class="card-footer d-flex justify-content-between align-items-center pb-0">
+                <label class="d-flex align-items-center gap-1" style="transform: translateY(-8px);">
+                    Показать:
+                    <select id="pageSize" class="form-control">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </label>
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination" id="pagination">
+                    </ul>
+                </nav>
             </div>
-        </div>
 
-        <!-- Модальное окно для создания/редактирования пользователя -->
-        <div class="modal fade" id="editAdminUser" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-simple modal-edit-admin-user">
-                <div class="modal-content p-3 p-md-5">
-                    <div class="modal-body">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                        <div class="text-center mb-4">
-                            <h3 class="modal-title mb-2">Создать Пользователя</h3>
-                            <p class="text-muted">Добавление нового пользователя администратора.</p>
-                        </div>
-                        <form id="editAdminUserForm" class="row g-3" onsubmit="return false">
-                            <!-- Имя -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserName">Имя</label>
-                                <input
-                                        type="text"
-                                        id="adminUserName"
-                                        name="name"
-                                        class="form-control"
-                                        placeholder="Иван"
-                                />
+            <!-- Индикатор загрузки -->
+            <div id="loading-indicator" class="d-none justify-content-center align-items-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+
+            <!-- Модальное окно для создания/редактирования пользователя -->
+            <div class="modal fade" id="editAdminUser" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-simple modal-edit-admin-user">
+                    <div class="modal-content p-3 p-md-5">
+                        <div class="modal-body">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                            <div class="text-center mb-4">
+                                <h3 class="modal-title mb-2">Создать Пользователя</h3>
+                                <p class="text-muted">Добавление нового пользователя администратора.</p>
                             </div>
-
-                            <!-- Фамилия -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserSurname">Фамилия</label>
-                                <input
-                                        type="text"
-                                        id="adminUserSurname"
-                                        name="surname"
-                                        class="form-control"
-                                        placeholder="Иванов"
-                                />
-                            </div>
-
-                            <!-- Электронная почта -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserEmail">Электронная почта</label>
-                                <input
-                                        type="email"
-                                        id="adminUserEmail"
-                                        name="email"
-                                        class="form-control"
-                                        placeholder="example@domain.com"
-                                />
-                            </div>
-
-                            <!-- Номер телефона -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserPhone">Номер телефона</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">+7</span>
-                                    <input
-                                            type="text"
-                                            id="adminUserPhone"
-                                            name="phoneNumber"
-                                            class="form-control phone-number-mask"
-                                            placeholder="999 999 9999"
-                                    />
+                            <form id="editAdminUserForm" class="row g-3" onsubmit="return false">
+                                <input type="hidden" id="adminUserId" name="id">
+                                <!-- Имя -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="adminUserName">Имя</label>
+                                    <input type="text" id="adminUserName" name="name" class="form-control"
+                                        placeholder="Иван" />
                                 </div>
-                            </div>
 
-                            <!-- Пароль -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserPassword">Пароль</label>
-                                <input
-                                        type="password"
-                                        id="adminUserPassword"
-                                        name="password"
-                                        class="form-control"
-                                        placeholder="••••••••"
-                                />
-                            </div>
+                                <!-- Фамилия -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="adminUserSurname">Фамилия</label>
+                                    <input type="text" id="adminUserSurname" name="surname" class="form-control"
+                                        placeholder="Иванов" />
+                                </div>
 
-                            <!-- Роль -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="adminUserRole">Роль</label>
-                                <select
-                                        id="adminUserRole"
-                                        name="role"
-                                        class="form-select"
-                                >
-                                    <option value="" disabled selected>Загрузка ролей...</option>
-                                </select>
-                            </div>
+                                <!-- Электронная почта -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="adminUserEmail">Электронная почта</label>
+                                    <input type="email" id="adminUserEmail" name="email" class="form-control"
+                                        placeholder="example@domain.com" />
+                                </div>
 
-                            <!-- Активен -->
-                            <div class="col-12">
-                                <label class="switch">
-                                    <input
-                                            type="checkbox"
-                                            id="adminUserIsActive"
-                                            name="isActive"
-                                            class="switch-input"
-                                            checked
-                                    />
-                                    <span class="switch-toggle-slider">
-                                        <span class="switch-on"></span>
-                                        <span class="switch-off"></span>
-                                    </span>
-                                    <span class="switch-label">Активен</span>
-                                </label>
-                            </div>
+                                <!-- Номер телефона -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="adminUserPhone">Номер телефона</label>
+                                    <input type="text" id="adminUserPhone" name="phoneNumber" class="form-control"
+                                        placeholder="+380" />
+                                </div>
 
-                            <!-- Кнопки отправки и отмены -->
-                            <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
-                                <button
-                                        type="reset"
-                                        class="btn btn-label-secondary"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Закрыть"
-                                >
-                                    Отменить
-                                </button>
-                            </div>
-                        </form>
+                                <!-- Пароль -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="adminUserPassword">Пароль</label>
+                                    <input type="password" id="adminUserPassword" name="password" class="form-control"
+                                        placeholder="••••••••" />
+                                </div>
+
+                                <!-- Роль -->
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="adminUserRole">Роль</label>
+                                    <select id="adminUserRole" name="role" class="form-select">
+                                        <option value="" disabled selected>Загрузка ролей...</option>
+                                    </select>
+                                </div>
+
+                                <!-- Активен -->
+                                <div class="col-12">
+                                    <label class="switch">
+                                        <input type="checkbox" id="adminUserIsActive" name="isActive"
+                                            class="switch-input" checked />
+                                        <span class="switch-toggle-slider">
+                                            <span class="switch-on"></span>
+                                            <span class="switch-off"></span>
+                                        </span>
+                                        <span class="switch-label">Активен</span>
+                                    </label>
+                                </div>
+
+                                <!-- Кнопки отправки и отмены -->
+                                <div class="col-12 text-center">
+                                    <button type="submit" class="btn btn-primary me-sm-3 me-1">Сохранить</button>
+                                    <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal"
+                                        aria-label="Закрыть">
+                                        Отменить
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно подтверждения удаления -->
+            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            Вы уверены, что хотите удалить этого пользователя?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-label-secondary"
+                                data-bs-dismiss="modal">Отменить</button>
+                            <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Модальное окно подтверждения удаления -->
-        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteConfirmModalLabel">Подтверждение удаления</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                    </div>
-                    <div class="modal-body">
-                        Вы уверены, что хотите удалить этого пользователя?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Отменить</button>
-                        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script th:inline="javascript">
-
-        const contextPath = '[[@{/}]]'.replaceAll("\"", "");
-        class APIService {
-            constructor(baseURL) {
-                this.baseURL = baseURL;
-            }
-
-
-            async request(endpoint, options = {}) {
-                const url = `${this.baseURL}${endpoint}`;
-                const response = await fetch(url, options);
-
-                if (!response.ok) {
-                    let errorData;
-                    try {
-                        errorData = await response.json();
-                    } catch {
-                        errorData = {message: 'Неизвестная ошибка'};
-                    }
-                    throw {status: response.status, data: errorData};
-                }
-
-                const contentType = response.headers.get('Content-Type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    return null;
-                }
-            }
-
-            async getAllUsers(page = 0, size = 5, search = '') {
-                const encodedSearch = encodeURIComponent(search);
-                return this.request(`admin/getAllManagerUsers?page=${page}&size=${size}&search=${encodedSearch}`);
-            }
-
-            async getUserById(userId) {
-                return this.request(`admin/${userId}`);
-            }
-
-            async createUser(userData) {
-                return this.request('admin/create', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData),
-                });
-            }
-
-            async updateUser(userId, userData) {
-                return this.request(`admin/${userId}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData),
-                });
-            }
-
-            async deleteUser(userId) {
-                return this.request(`admin/${userId}`, {
-                    method: 'DELETE',
-                });
-            }
-
-            async getRoles() {
-                return this.request('admin/roles');
-            }
-        }
-
-        // Pagination: Класс для управления пагинацией
-        class Pagination {
-            constructor(containerId, onPageChange) {
-                this.container = document.getElementById(containerId);
-                this.onPageChange = onPageChange;
-                this.currentPage = 0;
-                this.totalPages = 0;
-
-                // Делегирование событий для кликов по элементам пагинации
-                this.container.addEventListener('click', (e) => {
-                    const a = e.target.closest('a');
-                    if (a && this.container.contains(a)) {
-                        e.preventDefault();
-                        const page = a.getAttribute('data-page');
-                        if (page !== null) {
-                            const pageNumber = parseInt(page, 10);
-                            if (pageNumber >= 0 && pageNumber < this.totalPages) {
-                                this.onPageChange(pageNumber);
-                            }
-                        }
-                    }
-                });
-            }
-
-            setup(totalPages, currentPage) {
-                console.log(`Setting up pagination: totalPages=${totalPages}, currentPage=${currentPage}`);
-                this.currentPage = currentPage;
-                this.totalPages = totalPages;
-                this.render();
-            }
-
-            render() {
-                console.log(`Rendering pagination: totalPages=${this.totalPages}, currentPage=${this.currentPage}`);
-                if (this.totalPages === 0) {
-                    this.container.innerHTML = '';
-                    return;
-                }
-
-                let paginationItems = '';
-
-                // Первая страница
-                if (this.currentPage > 0) {
-                    paginationItems += this.createPaginationItem(0, '<i class="ti ti-chevrons-left ti-xs"></i>', 'first');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevrons-left ti-xs"></i>', 'first');
-                }
-
-                // Предыдущая страница
-                if (this.currentPage > 0) {
-                    paginationItems += this.createPaginationItem(this.currentPage - 1, '<i class="ti ti-chevron-left ti-xs"></i>', 'prev');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevron-left ti-xs"></i>', 'prev');
-                }
-
-                // Первая страница и "..."
-                if (this.currentPage > 2) { // Изменено с >1 на >2
-                    paginationItems += this.createPaginationItem(0, '1');
-                    if (this.currentPage > 3) { // Изменено с >2 на >3
-                        paginationItems += this.createDisabledPaginationItem('...');
-                    }
-                }
-
-                // Текущая страница и соседние
-                const startPage = Math.max(0, this.currentPage - 1);
-                const endPage = Math.min(this.totalPages - 1, this.currentPage + 1);
-                for (let i = startPage; i <= endPage; i++) {
-                    paginationItems += this.createPaginationItem(i, i + 1, '', i === this.currentPage);
-                }
-
-                // Последняя страница и "..."
-                if (this.currentPage < this.totalPages - 3) { // Изменено с < this.totalPages - 2 на < this.totalPages - 3
-                    if (this.currentPage < this.totalPages - 4) { // Изменено с < this.totalPages - 3 на < this.totalPages - 4
-                        paginationItems += this.createDisabledPaginationItem('...');
-                    }
-                    paginationItems += this.createPaginationItem(this.totalPages - 1, this.totalPages);
-                }
-
-                // Следующая страница
-                if (this.currentPage < this.totalPages - 1) {
-                    paginationItems += this.createPaginationItem(this.currentPage + 1, '<i class="ti ti-chevron-right ti-xs"></i>', 'next');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevron-right ti-xs"></i>', 'next');
-                }
-
-                // Последняя страница
-                if (this.currentPage < this.totalPages - 1) {
-                    paginationItems += this.createPaginationItem(this.totalPages - 1, '<i class="ti ti-chevrons-right ti-xs"></i>', 'last');
-                } else {
-                    paginationItems += this.createDisabledPaginationItem('<i class="ti ti-chevrons-right ti-xs"></i>', 'last');
-                }
-
-                this.container.innerHTML = paginationItems;
-            }
-
-            createPaginationItem(page, text, className = '', isActive = false) {
-                const activeClass = isActive ? 'active' : '';
-                const additionalClass = className ? className : '';
-                if (isActive) {
-                    return `
-                        <li class="page-item ${additionalClass} ${activeClass}">
-                            <span class="page-link">${text}</span>
-                        </li>
-                    `;
-                }
-                return `
-                        <li class="page-item ${additionalClass} ${activeClass}">
-                            <a class="page-link" href="#" data-page="${page}">${text}</a>
-                        </li>
-                    `;
-            }
-
-            createDisabledPaginationItem(text, className = '') {
-                const additionalClass = className ? className : '';
-                return `
-                        <li class="page-item disabled ${additionalClass}">
-                            <span class="page-link">${text}</span>
-                        </li>
-                    `;
-            }
-        }
-
-        // UserTable: Класс для управления таблицей пользователей
-        class UserTable {
-            constructor(tableBodyId, onEdit, onDelete) {
-                this.tableBody = document.getElementById(tableBodyId);
-                this.onEdit = onEdit;
-                this.onDelete = onDelete;
-            }
-
-            populate(users) {
-                this.tableBody.innerHTML = ''; // Очистка таблицы
-
-                if (users.length === 0) {
-                    const row = document.createElement('tr');
-                    const cell = document.createElement('td');
-                    cell.colSpan = 5;
-                    cell.className = 'text-center';
-                    cell.textContent = 'Нет данных для отображения';
-                    row.appendChild(cell);
-                    this.tableBody.appendChild(row);
-                    return;
-                }
-
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-
-                    // ID
-                    const idCell = document.createElement('td');
-                    idCell.className = 'text-center';
-                    idCell.textContent = user.id;
-                    row.appendChild(idCell);
-
-                    // Имя Фамилия
-                    const nameCell = document.createElement('td');
-                    nameCell.className = 'text-center';
-                    nameCell.textContent = `${user.name} ${user.surname}`;
-                    row.appendChild(nameCell);
-
-                    // Почта
-                    const emailCell = document.createElement('td');
-                    emailCell.className = 'text-center';
-                    emailCell.textContent = user.email;
-                    row.appendChild(emailCell);
-
-                    // Права
-                    const roleCell = document.createElement('td');
-                    roleCell.className = 'text-center';
-                    roleCell.textContent = user.role;
-                    row.appendChild(roleCell);
-
-                    // Actions
-                    const actionsCell = document.createElement('td');
-                    actionsCell.className = 'text-center';
-
-                    const editButton = document.createElement('button');
-                    editButton.className = 'btn btn-sm btn-primary me-2';
-                    editButton.textContent = 'Редактировать';
-                    editButton.addEventListener('click', () => this.onEdit(user.id));
-                    actionsCell.appendChild(editButton);
-
-                    const deleteButton = document.createElement('button');
-                    deleteButton.className = 'btn btn-sm btn-danger';
-                    deleteButton.textContent = 'Удалить';
-                    deleteButton.addEventListener('click', () => this.onDelete(user.id));
-                    actionsCell.appendChild(deleteButton);
-
-                    row.appendChild(actionsCell);
-                    this.tableBody.appendChild(row);
-                });
-            }
-        }
-
-        // UserModal: Класс для управления модальным окном создания/редактирования пользователя
-        class UserModal {
-            constructor(modalId, formId, onSubmit, apiService) {
-                this.modal = document.getElementById(modalId);
-                this.form = document.getElementById(formId);
-                this.onSubmit = onSubmit;
-                this.apiService = apiService; // Добавляем ссылку на APIService
-                this.isEditMode = false;
-                this.editUserId = null;
-
-                // Элементы формы
-                this.nameInput = this.form.querySelector('input[name="name"]');
-                this.surnameInput = this.form.querySelector('input[name="surname"]');
-                this.emailInput = this.form.querySelector('input[name="email"]');
-                this.phoneInput = this.form.querySelector('input[name="phoneNumber"]');
-                this.passwordInput = this.form.querySelector('input[name="password"]');
-                this.roleSelect = this.form.querySelector('select[name="role"]');
-                this.isActiveCheckbox = this.form.querySelector('input[name="isActive"]');
-
-                // Обработчики событий
-                this.form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleSubmit();
-                });
-
-                this.form.addEventListener('reset', () => {
-                    this.clearForm();
-                });
-
-                this.loadRoles();
-            }
-
-            async loadRoles() {
-                try {
-                    const roles = await this.apiService.getRoles();
-                    console.log('Роли загружены:', roles);
-                    this.populateRoles(roles);
-                } catch (error) {
-                    console.error('Ошибка при загрузке ролей:', error);
-                }
-            }
-
-            populateRoles(roles) {
-                // Очищаем текущие опции, кроме первой (загрузка)
-                this.roleSelect.innerHTML = '<option value="" disabled selected>Выберите роль</option>';
-
-                roles.forEach(role => {
-                    console.log(role);
-                    const option = document.createElement('option');
-                    option.value = role; // Предполагается, что role это строка, например "ADMIN"
-                    // Преобразуем роль в читаемый формат, например "ADMIN" -> "Администратор"
-                    option.textContent = this.getRoleDisplayName(role);
-                    this.roleSelect.appendChild(option);
-                });
-            }
-
-            getRoleDisplayName(role) {
-                const roleNames = {
-                    ADMIN: 'Администратор',
-                    SUPER_ADMIN: 'Супер Администратор',
-                    MODERATOR: 'Модератор',
-                    MANAGER: 'Менеджер' // Добавьте другие роли по необходимости
-                };
-                return roleNames[role] || role;
-            }
-
-            open(isEdit = false, userData = null) {
-                this.isEditMode = isEdit;
-                if (isEdit && userData) {
-                    this.editUserId = userData.id;
-                    this.nameInput.value = userData.name;
-                    this.surnameInput.value = userData.surname;
-                    this.emailInput.value = userData.email;
-                    this.phoneInput.value = userData.phoneNumber;
-                    this.passwordInput.value = ''; // Оставляем пароль пустым при редактировании
-                    this.roleSelect.value = userData.role;
-                    this.isActiveCheckbox.checked = userData.isActive;
-                } else {
-                    this.clearForm();
-                }
-
-                const modalTitle = this.modal.querySelector('.modal-title');
-                modalTitle.textContent = isEdit ? 'Редактировать Пользователя' : 'Создать Пользователя';
-                this.modalInstance.show();
-            }
-
-            clearForm() {
-                this.form.reset();
-                this.removeValidationErrors();
-                this.editUserId = null;
-                this.isEditMode = false;
-            }
-
-            removeValidationErrors() {
-                const errorMessages = this.form.querySelectorAll('.error-message');
-                errorMessages.forEach(msg => msg.remove());
-            }
-
-            async handleSubmit() {
-                this.removeValidationErrors();
-
-                const userData = {
-                    name: this.nameInput.value.trim(),
-                    surname: this.surnameInput.value.trim(),
-                    email: this.emailInput.value.trim(),
-                    phoneNumber: this.phoneInput.value.trim(),
-                    password: this.passwordInput.value, // Возможно, оставить пустым при редактировании
-                    role: this.roleSelect.value,
-                    isActive: this.isActiveCheckbox.checked
-                };
-
-                try {
-                    await this.onSubmit(this.isEditMode, this.editUserId, userData);
-                    this.close(); // Закрываем модальное окно после успешного создания/редактирования
-                    $('.modal-backdrop').remove();
-                } catch (error) {
-                    if (error.status === 400 && error.data) {
-                        this.displayValidationErrors(error.data);
-                    } else {
-                        console.error('Ошибка при сохранении пользователя:', error);
-                    }
-                }
-            }
-
-
-            displayValidationErrors(errors) {
-                for (const field in errors) {
-                    if (errors.hasOwnProperty(field)) {
-                        const errorMessage = errors[field];
-                        const inputField = this.form.querySelector(`[name="${field}"]`);
-                        if (inputField) {
-                            const errorSpan = document.createElement('span');
-                            errorSpan.className = 'text-danger error-message';
-                            errorSpan.textContent = errorMessage;
-                            inputField.classList.add('is-invalid');
-                            inputField.parentElement.appendChild(errorSpan);
-                        }
-                    }
-                }
-            }
-
-            close() {
-                this.modalInstance.hide();
-            }
-
-            initializeModal() {
-                // Инициализация Bootstrap Modal
-                const bootstrapModal = new bootstrap.Modal(this.modal, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                this.modalInstance = bootstrapModal;
-            }
-        }
-
-        // DeleteConfirmModal: Класс для управления модальным окном подтверждения удаления
-        class DeleteConfirmModal {
-            constructor(modalId, confirmButtonId, onConfirm) {
-                this.modal = document.getElementById(modalId);
-                this.confirmButton = document.getElementById(confirmButtonId);
-                this.onConfirm = onConfirm;
-                this.userId = null;
-
-                this.confirmButton.addEventListener('click', () => {
-                    if (this.userId !== null) {
-                        this.onConfirm(this.userId);
-                        this.close();
-                    }
-                });
-
-                this.initializeModal();
-            }
-
-            open(userId) {
-                this.userId = userId;
-                this.modalInstance.show();
-            }
-
-            close() {
-                this.modalInstance.hide();
-                this.userId = null;
-            }
-
-            initializeModal() {
-                // Инициализация Bootstrap Modal
-                const bootstrapModal = new bootstrap.Modal(this.modal, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                this.modalInstance = bootstrapModal;
-            }
-        }
-
-        class UserTableApp {
-            constructor(config) {
-                this.apiService = new APIService(config.apiBaseURL); // Передаем contextPath + "/admin" в APIService
-                this.userTable = new UserTable(config.tableBodyId, this.handleEdit.bind(this), this.handleDelete.bind(this));
-                this.pagination = new Pagination(config.paginationId, this.handlePageChange.bind(this));
-                this.userModal = new UserModal(config.modalId, config.formId, this.handleFormSubmit.bind(this), this.apiService);
-                this.deleteConfirmModal = new DeleteConfirmModal(config.deleteModalId, config.confirmDeleteBtnId, this.handleDeleteConfirm.bind(this));
-                this.searchInput = document.getElementById(config.searchInputId);
-                this.pageSizeSelect = document.getElementById(config.pageSizeSelectId);
-                this.createButton = document.getElementById(config.createButtonId);
-                this.loadingIndicator = document.getElementById(config.loadingIndicatorId);
-                this.currentPage = 0;
-                this.pageSize = parseInt(this.pageSizeSelect.value, 10);
-                this.searchQuery = '';
-
-                this.initialize();
-            }
-
-            initialize() {
-                // Инициализация модальных окон
-                this.userModal.initializeModal();
-                this.deleteConfirmModal.initializeModal();
-
-                // Загрузка начальных данных
-                this.fetchAndRenderUsers();
-
-                // Обработчик изменения размера страницы
-                this.pageSizeSelect.addEventListener('change', () => {
-                    this.pageSize = parseInt(this.pageSizeSelect.value, 10);
-                    this.currentPage = 0;
-                    this.fetchAndRenderUsers();
-                });
-
-                // Обработчик создания нового пользователя
-                this.createButton.addEventListener('click', () => {
-                    this.userModal.open(false);
-                });
-
-                // Обработчик поиска
-                this.searchInput.addEventListener('input', () => {
-                    this.searchQuery = this.searchInput.value.trim();
-                    this.currentPage = 0;
-                    this.fetchAndRenderUsers();
-                });
-            }
-
-            showLoading() {
-                this.loadingIndicator.classList.remove('d-none');
-            }
-
-            hideLoading() {
-                this.loadingIndicator.classList.add('d-none');
-            }
-
-            async blockCard  (message = 'Загрузка...') {
-                $('#card-block').block({
-                    message: `<div class="spinner-border text-primary" role="status"></div><span class="ms-2">${message}</span>`,
-                    css: {
-                        backgroundColor: 'transparent',
-                        border: '0'
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const app = new GenericCRUDApp({
+                    api: {
+                        baseURL: '[[@{/}]]'.replaceAll("\"", ""),
+                        endpoints: {
+                            getAll: 'admin/getAllManagerUsers',
+                            getById: 'admin/{id}',
+                            create: 'admin/create',
+                            update: 'admin/{id}',
+                            delete: 'admin/{id}'
+                        },
+                        entityType: 'json' // Указываем тип сущности по умолчанию как 'json'
                     },
-                    overlayCSS: {
-                        opacity: 0.5
-                    }
+                    entityName: 'Пользователь',
+                    tableBodyId: 'table-body',
+                    paginationId: 'pagination',
+                    modalId: 'editAdminUser',
+                    formId: 'editAdminUserForm',
+                    deleteModalId: 'deleteConfirmModal',
+                    confirmDeleteBtnId: 'confirm-delete-btn',
+                    searchInputId: 'search',
+                    pageSizeSelectId: 'pageSize',
+                    createButtonId: 'createEntity',
+                    loadingIndicatorId: 'loading-indicator',
+                    columns: [
+                        { key: 'id', title: 'ID' },
+                        {
+                            title: 'Имя Фамилия',
+                            render: (item) => `${item.name || ''} ${item.surname || ''}`.trim()
+                        },
+                        { key: 'email', title: 'Почта' },
+                        { key: 'role', title: 'Права' }
+                    ],
+                    formFields: [
+                        { name: 'id', type: 'hidden' },
+                        { name: 'name', type: 'text', label: 'Имя', required: true },
+                        { name: 'surname', type: 'text', label: 'Фамилия', required: true },
+                        { name: 'email', type: 'email', label: 'Email', required: true },
+                        { name: 'phoneNumber', type: 'text', label: 'Телефон', required: true },
+                        { name: 'password', type: 'password', label: 'Пароль', required: false },
+                        { name: 'role', type: 'select', label: 'Роль', required: true },
+                        { name: 'isActive', type: 'checkbox', label: 'Активен' }
+                    ],
+                    toastConfig: {
+                        positionClass: 'toast-top-right',
+                        timeOut: 10000,
+                        progressBar: true,
+                        closeButton: false
+                    },
+                    notificationKeyword: 'message'
                 });
-            }
 
-            // Функция для разблокировки карточки
-            async unblockCard()  {
-                $('#card-block').unblock();
-            };
-
-
-            async fetchAndRenderUsers() {
-                try {
-                    await this.blockCard();
-                    const data = await this.apiService.getAllUsers(this.currentPage, this.pageSize, this.searchQuery);
-                    const users = data.content;
-
-                    // Проверка корректности currentPage
-                    if (this.currentPage >= data.totalPages && data.totalPages > 0) {
-                        this.currentPage = data.totalPages - 1;
-                        const updatedData = await this.apiService.getAllUsers(this.currentPage, this.pageSize, this.searchQuery);
-                        this.userTable.populate(updatedData.content);
-                        this.pagination.setup(updatedData.totalPages, this.currentPage);
-                        return;
-                    }
-
-                    this.userTable.populate(users);
-                    this.pagination.setup(data.totalPages, this.currentPage);
-                } catch (error) {
-                    console.error('Ошибка при загрузке пользователей:', error);
-                } finally {
-                    await this.unblockCard();
-                }
-            }
-
-            handlePageChange(newPage) {
-                this.currentPage = newPage;
-                this.fetchAndRenderUsers();
-            }
-
-            handleEdit(userId) {
-                this.apiService.getUserById(userId)
-                    .then(userData => {
-                        this.userModal.open(true, userData);
+                const roleSelect = document.getElementById('adminUserRole');
+                fetch('[[@{/admin/roles}]]')
+                    .then(response => response.json())
+                    .then(roles => {
+                        roleSelect.innerHTML = '<option value="" disabled selected>Выберите роль</option>';
+                        roles.forEach(role => {
+                            const option = document.createElement('option');
+                            option.value = role;
+                            option.textContent = getRoleDisplayName(role);
+                            roleSelect.appendChild(option);
+                        });
                     })
                     .catch(error => {
-                        console.error('Ошибка при получении данных пользователя:', error);
+                        console.error('Ошибка при загрузке ролей:', error);
+                        app.showToast('error', 'Ошибка', 'Ошибка при загрузке ролей');
                     });
-            }
 
-            handleDelete(userId) {
-                this.deleteConfirmModal.open(userId);
-            }
-
-            async handleDeleteConfirm(userId) {
-                try {
-                    await this.apiService.deleteUser(userId);
-                    // После успешного удаления, обновляем список пользователей
-                    // Если deleteUser возвращает null, нет ошибки
-                    // Если после удаления текущая страница пуста, переходим на предыдущую
-                    const dataAfterDeletion = await this.apiService.getAllUsers(this.currentPage, this.pageSize, this.searchQuery);
-                    if (dataAfterDeletion.content.length === 0 && this.currentPage > 0) {
-                        this.currentPage--;
-                    }
-                    this.fetchAndRenderUsers();
-                } catch (error) {
-                    console.error('Ошибка при удалении пользователя:', error);
+                function getRoleDisplayName(role) {
+                    const roleNames = {
+                        ADMIN: 'Администратор',
+                        MANAGER: 'Менеджер'
+                    };
+                    return roleNames[role] || role;
                 }
-            }
 
-
-
-            async handleFormSubmit(isEditMode, userId, userData) {
-                try {
-                    if (isEditMode) {
-                        await this.apiService.updateUser(userId, userData);
-                    } else {
-                        await this.apiService.createUser(userData);
-                    }
-                    this.fetchAndRenderUsers();
-                } catch (error) {
-                    throw error;
+                const phoneInput = document.getElementById('adminUserPhone');
+                if (phoneInput && typeof Inputmask !== 'undefined') {
+                    Inputmask("999 999 9999").mask(phoneInput);
                 }
-            }
-        }
-
-        // Инициализация приложения после загрузки DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = new UserTableApp({
-                apiBaseURL: `${contextPath}`, // Устанавливаем правильный baseURL
-                tableBodyId: 'table-body',
-                paginationId: 'pagination',
-                modalId: 'editAdminUser',
-                formId: 'editAdminUserForm',
-                deleteModalId: 'deleteConfirmModal',
-                confirmDeleteBtnId: 'confirm-delete-btn',
-                searchInputId: 'search',
-                pageSizeSelectId: 'pageSize',
-                createButtonId: 'createEntity',
-                loadingIndicatorId: 'loading-indicator'
             });
+        </script>
 
-            // Инициализация маски номера телефона
-            const phoneInput = document.getElementById('adminUserPhone');
-            if (phoneInput) {
-                Inputmask("999 999 9999").mask(phoneInput);
-            }
-        });
-    </script>
-    <script th:src="@{/assets/vendor/js/bootstrap.js}"></script>
-</div>
+        <script th:src="@{/customAssets/js/formCrudScript.js}"></script>
+
+    </div>
 </body>
+
 </html>
-
-
-
