@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 
-@Constraint(validatedBy = FieldPhoneUniqueValidator.class)
+@Constraint(validatedBy = )
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldPhoneUnique {

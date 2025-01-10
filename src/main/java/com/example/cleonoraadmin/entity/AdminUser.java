@@ -23,25 +23,25 @@ import java.util.Collections;
 - passwordResetToken: PasswordResetToken
 --
 + getId(): Long
-+ setId(Long id)
++ setId(Long id): void
 + getName(): String
-+ setName(String name)
++ setName(String name): void
 + getSurname(): String
-+ setSurname(String surname)
++ setSurname(String surname): void
 + getAvatar(): String
-+ setAvatar(String avatar)
++ setAvatar(String avatar): void
 + getEmail(): String
-+ setEmail(String email)
++ setEmail(String email): void
 + getPhoneNumber(): String
-+ setPhoneNumber(String phoneNumber)
++ setPhoneNumber(String phoneNumber): void
 + getPassword(): String
-+ setPassword(String password)
++ setPassword(String password): void
 + getIsActive(): Boolean
-+ setIsActive(Boolean isActive)
++ setIsActive(Boolean isActive): void
 + getRole(): AdminRole
-+ setRole(AdminRole role)
++ setRole(AdminRole role): void
 + getPasswordResetToken(): PasswordResetToken
-+ setPasswordResetToken(PasswordResetToken passwordResetToken)
++ setPasswordResetToken(PasswordResetToken passwordResetToken): void
  */
 
 @Entity

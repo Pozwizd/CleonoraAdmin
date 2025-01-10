@@ -35,7 +35,7 @@ public class CheckTimeValidator implements ConstraintValidator<CheckTime, Object
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            return false;
         }
 
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(value);
@@ -43,13 +43,13 @@ public class CheckTimeValidator implements ConstraintValidator<CheckTime, Object
         LocalDate startDate = (LocalDate) beanWrapper.getPropertyValue(startDateField);
 
         if (startTime == null || startDate == null) {
-            return true;
+            return false;
         }
 
         Workday workday = workdayRepository.findByDate(startDate).orElse(null);
 
         if (workday == null) {
-            return true;
+            return false;
         }
 
         boolean hasConflict = workday.getTimeSlots().stream()

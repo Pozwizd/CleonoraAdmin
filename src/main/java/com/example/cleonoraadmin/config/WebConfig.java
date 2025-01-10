@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.net.http.HttpClient;
 import java.nio.file.Paths;
 
 @Configuration
@@ -20,6 +21,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public Faker faker() {
         return new Faker();
+    }
+
+    @Bean
+    public HttpClient httpClient() {
+        return HttpClient.newHttpClient();
     }
 
     @Bean

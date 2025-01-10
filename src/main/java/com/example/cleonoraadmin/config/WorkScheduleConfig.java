@@ -15,14 +15,14 @@ public class WorkScheduleConfig {
 
     @Data
     public static class WorkDay {
-        private String start; // Время начала работы
-        private String end; // Время окончания работы
-        private Lunch lunch; // Обеденное время
+        private String start;
+        private String end;
+        private Lunch lunch;
 
         @Data
         public static class Lunch {
-            private String start; // Время начала обеда
-            private String end; // Время окончания обеда
+            private String start;
+            private String end;
         }
     }
 }

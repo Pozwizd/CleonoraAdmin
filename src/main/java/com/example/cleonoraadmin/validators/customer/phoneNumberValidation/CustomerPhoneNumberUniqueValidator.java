@@ -1,15 +1,21 @@
 package com.example.cleonoraadmin.validators.adminUser.phoneNumberValidation;
 
-import com.example.cleonoraadmin.repository.AdminUserRepository;
+import com.example.cleonoraadmin.entity.Customer;
+import com.example.cleonoraadmin.repository.CustomerRepository;
+import com.example.cleonoraadmin.validators.FieldPhoneUnique;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
-public class FieldPhoneUniqueValidator implements ConstraintValidator<FieldPhoneUnique, Object> {
-    private final AdminUserRepository userRepository;
+public class CustomerPhoneNumberUniqueValidator implements ConstraintValidator<FieldPhoneUnique, Object> {
+
+    private final CustomerRepository customerRepository;
+
     private String idField;
     private String phoneNumberField;
 
@@ -33,22 +39,19 @@ public class FieldPhoneUniqueValidator implements ConstraintValidator<FieldPhone
             return true;
         }
 
-        var existingUserOptional = userRepository.findByPhoneNumber(phoneNumber);
-
-        if (existingUserOptional.isEmpty()) {
-            return true;
-        }
-
-        var existingUser = existingUserOptional.get();
-        boolean isValid = id != null && existingUser.getId().equals(id);
+        boolean isValid = isValidForCustomer(phoneNumber, id);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Номер телефона уже используется")
+            context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
                     .addPropertyNode(phoneNumberField)
                     .addConstraintViolation();
         }
-
         return isValid;
+    }
+
+    private boolean isValidForCustomer(String phoneNumber, Object id) {
+        Optional<Customer> existingCustomer = customerRepository.findByPhoneNumber(phoneNumber); // Предполагается, что у вас есть такой метод в репозитории
+        return existingCustomer.isEmpty() || (id != null && existingCustomer.get().getId().equals(id));
     }
 }

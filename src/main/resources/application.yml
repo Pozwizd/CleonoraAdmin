@@ -32,10 +32,6 @@ spring:
       max-file-size: 200MB
       max-request-size: 215MB
 
-
-
-
-
 logging:
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
@@ -50,7 +46,8 @@ upload:
     path: "/home/slj/projects/Cleonora-R.Miahkykh/uploads"
 
 
-
+***REMOVED***
+sender: "dima.ivanov@avada-media.com"
 
 work-schedule:
   schedule:
@@ -92,3 +89,4 @@ work-schedule:
         end: "12:30"
     sunday:
       start: "off"
+

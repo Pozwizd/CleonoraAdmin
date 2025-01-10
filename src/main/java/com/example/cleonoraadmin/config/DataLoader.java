@@ -63,7 +63,6 @@ public class DataLoader {
         while (!customerService.ifCustomerCountMoreThan(50)) {
             Customer customer = new Customer();
             customer.setName(faker.name().fullName());
-            customer.setSurname(faker.name().lastName());
             customer.setEmail(faker.internet().emailAddress());
 
             customer.setPhoneNumber(faker.phoneNumber().cellPhone());
@@ -83,20 +82,6 @@ public class DataLoader {
             cleaningService.save(cleaning);
         }
 
-//        {
-//            "id": null,
-//                "startDate": "2025-01-01",
-//                "startTime": "10:30",
-//                "customerId": 1,
-//                "status": "SCHEDULED",
-//                "orderCleanings": [
-//            {
-//                "id": null,
-//                    "cleaningId": 1,
-//                    "numberUnits": 5
-//            }
-//  ]
-//        }
         LocalDate startDate = LocalDate.parse("2025-01-01");
         while (!orderService.ifOrderMoreThan(5)) {
             startDate = startDate.plusDays(5);
@@ -104,7 +89,7 @@ public class DataLoader {
             orderRequest.setStartDate(startDate);
             orderRequest.setStartTime(LocalTime.parse("10:30"));
             orderRequest.setCustomerId(1L);
-            orderRequest.setStatus(OrderStatus.SCHEDULED);
+            orderRequest.setStatus(OrderStatus.COMPLETED);
             OrderCleaningRequest orderCleaningRequest = new OrderCleaningRequest();
             orderCleaningRequest.setCleaningId(1L);
             orderCleaningRequest.setNumberUnits(5);

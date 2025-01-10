@@ -1,7 +1,7 @@
 package com.example.cleonoraadmin.entity;
 
 /**
- AdminRole
+AdminRole
 + MANAGER
 + ADMIN
  */

@@ -29,26 +29,21 @@ public class WorkdayValidator implements ConstraintValidator<ValidWorkday, Objec
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true; // Если объект пустой, пропускаем валидацию
+            return false;
         }
 
-        // Доступ к полям через BeanWrapper
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(value);
         LocalDate startDate = (LocalDate) beanWrapper.getPropertyValue(startDateField);
         LocalTime startTime = (LocalTime) beanWrapper.getPropertyValue(startTimeField);
 
         if (startDate == null || startTime == null) {
-            return true; // Если дата или время отсутствуют, пропускаем валидацию
+            return false;
         }
 
-        // Получаем название дня недели
         String dayOfWeek = startDate.getDayOfWeek().toString().toLowerCase();
-
-        // Извлекаем расписание для указанного дня недели
         WorkScheduleConfig.WorkDay workDay = workScheduleConfig.getSchedule().get(dayOfWeek);
-
         if (workDay == null || "off".equalsIgnoreCase(workDay.getStart())) {
-            // Если день выходной, дата считается невалидной
+
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Выбранный день является выходным")
                     .addPropertyNode(startDateField)
@@ -56,8 +51,6 @@ public class WorkdayValidator implements ConstraintValidator<ValidWorkday, Objec
             return false;
         }
 
-
-        // Если всё корректно
         return true;
     }
 }
