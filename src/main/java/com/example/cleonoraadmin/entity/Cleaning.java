@@ -11,6 +11,17 @@ import lombok.Data;
 - description: String
 - category: Category
 - cleaningSpecifications: CleaningSpecifications
+--
++ getId(): Long
++ setId(Long id)
++ getName(): String
++ setName(String name)
++ getDescription(): String
++ setDescription(String description)
++ getCategory(): Category
++ setCategory(Category category)
++ getCleaningSpecifications(): CleaningSpecifications
++ setCleaningSpecifications(CleaningSpecifications cleaningSpecifications)
  */
 
 

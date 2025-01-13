@@ -2,6 +2,7 @@ package com.example.cleonoraadmin.controller;
 
 
 import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.entity.OrderStatus;
 import com.example.cleonoraadmin.model.category.CategoryResponse;
 import com.example.cleonoraadmin.model.order.OrderRequest;
 import com.example.cleonoraadmin.model.order.OrderResponse;
@@ -103,6 +104,11 @@ public class OrderController {
             log.error("Ошибка при обновлении заказа: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body("Произошла непредвиденная ошибка.");
         }
+    }
+
+    @GetMapping("/status")
+    public @ResponseBody ResponseEntity<?> getStatus() {
+        return ResponseEntity.ok(OrderStatus.values());
     }
 
 }

@@ -4,12 +4,22 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-/*
+/**
  PasswordResetToken
 - id: Long
 - token: String
 - expirationDate: LocalDateTime
 - adminUser: AdminUser
+--
+- calculateExpirationDate(): LocalDateTime
++ getId(): Long
++ setId(Long id): void
++ getToken(): String
++ setToken(String token): void
++ getExpirationDate(): LocalDateTime
++ setExpirationDate(LocalDateTime expirationDate): void
++ getAdminUser(): AdminUser
++ setAdminUser(AdminUser adminUser): void
  */
 
 @Entity

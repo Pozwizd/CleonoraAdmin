@@ -23,8 +23,35 @@ import java.util.List;
 - status: OrderStatus
 - customer: Customer
 - orderCleanings: List<OrderCleaning>
-
-
+- created: LocalDateTime
+- updated: LocalDateTime
+--
++ addOrderCleaning(OrderCleaning orderCleaning): void
++ removeOrderCleaning(OrderCleaning orderCleaning): void
++ calculateTotalDuration(): void
++ calculatePrice(): void
++ getId(): Long
++ setId(Long id): void
++ getStartDate(): LocalDate
++ setStartDate(LocalDate startDate): void
++ getStartTime(): LocalTime
++ setStartTime(LocalTime startTime): void
++ getEndDate(): LocalDate
++ setEndDate(LocalDate endDate): void
++ getTotalDuration(): Duration
++ setTotalDuration(Duration totalDuration): void
++ getPrice(): BigDecimal
++ setPrice(BigDecimal price): void
++ getStatus(): OrderStatus
++ setStatus(OrderStatus status): void
++ getCustomer(): Customer
++ setCustomer(Customer customer): void
++ getOrderCleanings(): List<OrderCleaning>
++ setOrderCleanings(List<OrderCleaning> orderCleanings): void
++ getCreated(): LocalDateTime
++ setCreated(LocalDateTime created): void
++ getUpdated(): LocalDateTime
++ setUpdated(LocalDateTime updated): void
  */
 @Entity
 @Table(name = "orders")
@@ -55,7 +82,9 @@ public class Order {
     private LocalDateTime created = LocalDateTime.now();
     private LocalDateTime updated = LocalDateTime.now();
 
-
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private AddressOrder addressOrder;
 
     public void addOrderCleaning(OrderCleaning orderCleaning) {
         orderCleanings.add(orderCleaning);
@@ -77,6 +106,14 @@ public class Order {
             totalPrice = totalPrice.add(orderCleaning.getPrice());
         }
         this.price = totalPrice;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void preSave() {
+        calculateTotalDuration();
+        calculatePrice();
+        updated = LocalDateTime.now();
     }
 
 }

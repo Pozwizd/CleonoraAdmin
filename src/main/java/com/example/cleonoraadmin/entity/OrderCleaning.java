@@ -16,19 +16,22 @@ import java.util.List;
 - price: BigDecimal
 - cleaning: Cleaning
 - timeSlots: List<TimeSlot>
- --
- - getId(): Long
- - setId(Long id)
- - getDurationCleaning(): Duration
- - setDurationCleaning(Duration durationCleaning)
- - getNumberUnits(): Integer
- - setNumberUnits(Integer numberUnits)
- - getPrice(): BigDecimal
- - setPrice(BigDecimal price)
- - getCleaning(): Cleaning
- - setCleaning(Cleaning cleaning)
- - getTimeSlots(): List<TimeSlot>
- - setTimeSlots(List<TimeSlot> timeSlots)
+--
++ addTimeSlot(TimeSlot timeSlot): void
++ removeTimeSlot(TimeSlot timeSlot): void
++ durationCleaning(): void
++ getId(): Long
++ setId(Long id): void
++ getDurationCleaning(): Duration
++ setDurationCleaning(Duration durationCleaning): void
++ getNumberUnits(): Integer
++ setNumberUnits(Integer numberUnits): void
++ getPrice(): BigDecimal
++ setPrice(BigDecimal price): void
++ getCleaning(): Cleaning
++ setCleaning(Cleaning cleaning): void
++ getTimeSlots(): List<TimeSlot>
++ setTimeSlots(List<TimeSlot> timeSlots): void
  */
 
 @Entity

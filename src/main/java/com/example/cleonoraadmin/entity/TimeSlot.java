@@ -9,25 +9,29 @@ import java.time.LocalTime;
 
 /**
  TimeSlot
- - id: Long
- - date: LocalDate
- - startTime: LocalTime
- - endTime: LocalTime
- - orderService: OrderService
- - workday: Workday
- --
- - getId(): Long
- - setId(Long id)
- - getDate(): LocalDate
- - setDate(LocalDate date)
- - getStartTime(): LocalTime
- - setStartTime(LocalTime startTime)
- - getEndTime(): LocalTime
- - setEndTime(LocalTime endTime)
- - getOrderService(): OrderService
- - setOrderService(OrderService orderService)
- - getWorkday(): Workday
- - setWorkday(Workday workday)
+- id: Long
+- date: LocalDate
+- startTime: LocalTime
+- endTime: LocalTime
+- isAvailable: boolean
+- orderCleaning: OrderCleaning
+- workday: Workday
+--
++ getDuration(): Duration
++ getId(): Long
++ setId(Long id): void
++ getDate(): LocalDate
++ setDate(LocalDate date): void
++ getStartTime(): LocalTime
++ setStartTime(LocalTime startTime): void
++ getEndTime(): LocalTime
++ setEndTime(LocalTime endTime): void
++ getIsAvailable(): boolean
++ setIsAvailable(boolean isAvailable): void
++ getOrderCleaning(): OrderCleaning
++ setOrderCleaning(OrderCleaning orderCleaning): void
++ getWorkday(): Workday
++ setWorkday(Workday workday): void
  */
 
 @Entity

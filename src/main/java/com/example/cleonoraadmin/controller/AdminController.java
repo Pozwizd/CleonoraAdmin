@@ -28,20 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 
 
-/**
-AdminController
-- adminUserService: AdminUserService
---
-+ addAttributes(Model model): void
-+ admin(): ModelAndView
-+ getAllAdminUsers(int page, int size, String search): Page<AdminUserResponse>
-+ getAdminUser(Long id): ResponseEntity<?>
-+ createAdminUser(AdminUserRequest adminUserRequest): ResponseEntity<?>
-+ updateEntity(Long id, AdminUserRequest adminUserRequest): ResponseEntity<?>
-+ deleteEntity(Long id): ResponseEntity<?>
-+ uploadImage(MultipartFile file, Principal principal): ResponseEntity<?>
- */
-
 @Controller
 @RequestMapping("/admin")
 @AllArgsConstructor
