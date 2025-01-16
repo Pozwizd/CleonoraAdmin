@@ -1,6 +1,6 @@
 package com.example.cleonoraadmin.model.category;
 
-import com.example.cleonoraadmin.validators.adminUser.category.UniqueCategoryName;
+import com.example.cleonoraadmin.validators.category.UniqueCategoryName;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 

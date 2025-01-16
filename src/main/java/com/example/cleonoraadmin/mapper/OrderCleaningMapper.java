@@ -5,6 +5,7 @@ import com.example.cleonoraadmin.entity.Cleaning;
 import com.example.cleonoraadmin.model.order.OrderCleaningRequest;
 import com.example.cleonoraadmin.model.order.OrderCleaningResponse;
 import com.example.cleonoraadmin.repository.CleaningRepository;
+import com.example.cleonoraadmin.service.CleaningService;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
@@ -20,7 +21,7 @@ public interface OrderCleaningMapper {
 
     @Mapping(target = "durationCleaning", ignore = true)
     default OrderCleaning toEntity(OrderCleaningRequest orderCleaningRequest,
-                                   @Context CleaningRepository cleaningRepository) {
+                                   @Context CleaningService cleaningService) {
 
         OrderCleaning orderCleaning = new OrderCleaning();
 
@@ -29,8 +30,9 @@ public interface OrderCleaningMapper {
         }
 
         orderCleaning.setNumberUnits(orderCleaningRequest.getNumberUnits());
-        orderCleaning.setCleaning(cleaningRepository.findById(orderCleaningRequest.getCleaningId()).orElseThrow());
-        orderCleaning.setPrice(BigDecimal.valueOf(orderCleaning.getNumberUnits() * orderCleaning.getCleaning().getCleaningSpecifications().getBaseCost()));
+        orderCleaning.setCleaning(cleaningService.getCleaning(orderCleaningRequest.getCleaningId()));
+        orderCleaning.setPrice(BigDecimal.valueOf(
+                orderCleaning.getNumberUnits() * orderCleaning.getCleaning().getCleaningSpecifications().getBaseCost()));
         orderCleaning.durationCleaning();
         return orderCleaning;
     }

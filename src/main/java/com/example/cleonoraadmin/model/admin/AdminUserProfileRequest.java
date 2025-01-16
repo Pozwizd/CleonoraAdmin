@@ -1,7 +1,7 @@
 package com.example.cleonoraadmin.model.admin;
 
-import com.example.cleonoraadmin.validators.adminUser.emailValidation.EmailUnique;
-import com.example.cleonoraadmin.validators.adminUser.phoneNumberValidation.FieldPhoneUnique;
+import com.example.cleonoraadmin.validators.EmailUnique;
+import com.example.cleonoraadmin.validators.FieldPhoneUnique;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;

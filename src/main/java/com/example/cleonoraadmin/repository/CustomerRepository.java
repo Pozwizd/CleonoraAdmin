@@ -16,4 +16,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSp
     @Query("SELECT COUNT(c) FROM Customer c")
     Integer countAllCustomers();
 
+    Optional<Customer> findByPhoneNumber(String s);
+
+    Optional<Customer> getCustomerByEmail(String email);
 }

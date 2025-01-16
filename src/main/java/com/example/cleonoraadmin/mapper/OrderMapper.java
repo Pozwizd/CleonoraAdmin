@@ -19,10 +19,7 @@ public interface OrderMapper {
 
 
 
-    default Order toEntity(OrderRequest orderRequest,
-                           @Context CustomerRepository customerRepository,
-                           @Context OrderCleaningMapper orderCleaningMapper,
-                           @Context CleaningRepository cleaningRepository) {
+    default Order toEntity(OrderRequest orderRequest) {
         if (orderRequest == null) {
             return null;
         } else {
@@ -32,12 +29,8 @@ public interface OrderMapper {
             }
             order.setStartDate(orderRequest.getStartDate());
             order.setStartTime(orderRequest.getStartTime());
-            order.setCustomer(customerRepository.findById(orderRequest.getCustomerId()).orElseThrow());
             order.setStatus(orderRequest.getStatus());
 
-            for (OrderCleaningRequest orderCleaningRequest : orderRequest.getOrderCleanings()) {
-                order.addOrderCleaning(orderCleaningMapper.toEntity(orderCleaningRequest, cleaningRepository));
-            }
             order.calculateTotalDuration();
             return order;
         }
@@ -55,7 +48,7 @@ public interface OrderMapper {
         orderResponse.setStartTime(order.getStartTime());
         orderResponse.setOrderCleanings(orderCleaningMapper.toResponseList(order.getOrderCleanings()));
         orderResponse.setCustomerId(order.getCustomer().getId());
-        orderResponse.setCustomerName(order.getCustomer().getName() + " " + order.getCustomer().getSurname());
+        orderResponse.setCustomerName(order.getCustomer().getName());
         return orderResponse;
     }
 
