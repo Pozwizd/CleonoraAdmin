@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class CleaningSpecificationsImp implements CleaningSpecificationsService {
 
     private final ServiceSpecificationsRepository serviceSpecificationsRepository;
-    private final CleaningSpecificationsMapper serviceSpecificationsMapper;
+    private final CleaningSpecificationsMapper cleaningSpecificationsMapper;
     private final UploadFile uploadFile;
 
     @Override
@@ -37,7 +37,7 @@ public class CleaningSpecificationsImp implements CleaningSpecificationsService 
     @Override
     public List<ServiceSpecificationsResponse> getAllServiceSpecifications() {
         return serviceSpecificationsRepository.findAll().stream()
-                .map(serviceSpecificationsMapper::toResponse)
+                .map(cleaningSpecificationsMapper::toResponse)
                 .sorted(Comparator.comparing(ServiceSpecificationsResponse::getId))
                 .collect(Collectors.toList());
     }
@@ -49,7 +49,7 @@ public class CleaningSpecificationsImp implements CleaningSpecificationsService 
                 CleaningSpecificationsSpec.search(search),
                 pageRequest
         );
-        return serviceSpecificationsMapper.toResponsePage(specifications);
+        return cleaningSpecificationsMapper.toResponsePage(specifications);
     }
 
 
@@ -66,24 +66,24 @@ public class CleaningSpecificationsImp implements CleaningSpecificationsService 
      */
     @Override
     public ServiceSpecificationsResponse getServiceSpecificationsResponseById(Long id) {
-        return serviceSpecificationsMapper.toResponse(serviceSpecificationsRepository.findById(id).orElse(null));
+        return cleaningSpecificationsMapper.toResponse(serviceSpecificationsRepository.findById(id).orElse(null));
     }
 
     @Override
     public ServiceSpecificationsResponse saveNewServiceSpecifications(ServiceSpecificationsRequest serviceSpecificationsRequest) {
-        return serviceSpecificationsMapper.toResponse(serviceSpecificationsRepository.save(serviceSpecificationsMapper.toEntity(serviceSpecificationsRequest, uploadFile)));
+        return cleaningSpecificationsMapper.toResponse(serviceSpecificationsRepository.save(cleaningSpecificationsMapper.toEntity(serviceSpecificationsRequest, uploadFile)));
     }
 
     @Override
     public ServiceSpecificationsResponse updateServiceSpecifications(Long id, ServiceSpecificationsRequest serviceSpecificationsRequest) {
         return serviceSpecificationsRepository.findById(id)
                 .map(serviceSpecifications -> {
-                    CleaningSpecifications updatedSpecification = serviceSpecificationsMapper
+                    CleaningSpecifications updatedSpecification = cleaningSpecificationsMapper
                             .toEntity(serviceSpecificationsRequest, uploadFile);
 
                     updatedSpecification.setId(id);
                     serviceSpecificationsRepository.save(updatedSpecification);
-                    return serviceSpecificationsMapper.toResponse(updatedSpecification);
+                    return cleaningSpecificationsMapper.toResponse(updatedSpecification);
                 }).orElse(null);
     }
 

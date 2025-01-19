@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -102,26 +101,32 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public Integer countAllCustomers() {
-        return customerRepository.countAllCustomers();
+        Integer count = customerRepository.countAllCustomers();
+        log.info("Количество клиентов: {}", count);
+        return count;
+
     }
 
-    /**
-     * @return
-     */
+
     @Override
     public Integer countDailyNewCustomers() {
 
         return customerRepository.findAll(CustomerSpecification.registrationLastDaily()).size();
     }
 
-//    @Override
-//    public Integer countTodayNewCustomers() {
-//        return customerRepository.countTodayNewCustomers();
-//    }
-//
-//    @Override
-//    public Long getCountOfCustomersWithOrdersLastWeek() {
-//        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-//        return customerRepository.countUniqueCustomersWithOrdersSince(oneWeekAgo);
-//    }
+    @Override
+    public Integer countActiveCustomers(int days) {
+        return customerRepository.findAll(CustomerSpecification.lastOrderWithinDays(days).and(CustomerSpecification.byDeleted(false))).size();
+    }
+
+    @Override
+    public Integer countActiveCustomersWeekAgo(int days) {
+        return customerRepository.findAll(CustomerSpecification.lastOrderWithinDaysAndWeekAgo(days).and(CustomerSpecification.byDeleted(false))).size();
+    }
+
+    @Override
+    public Customer getCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email).orElse(null);
+    }
+
 }

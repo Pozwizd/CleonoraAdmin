@@ -8,6 +8,7 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.thymeleaf.context.Context;
 import java.io.IOException;
 
 @Service
+@Slf4j
 public class MailServiceImpl implements MailService {
     private final TemplateEngine templateEngine;
     private final SendGrid sendGrid;
@@ -32,11 +34,10 @@ public class MailServiceImpl implements MailService {
         this.sendGrid = grid;
     }
 
-    private Logger logger = LogManager.getLogger("serviceLogger");
     @Async
     @Override
     public void sendToken(String token, String to, HttpServletRequest httpRequest) {
-        logger.info("sendToken() - Sending token to "+to);
+        log.info("sendToken() - Sending token to {}", to);
         Email from = new Email(sender);
         String subject = "Встановлення нового паролю";
         Email toEmail = new Email(to);
@@ -48,15 +49,15 @@ public class MailServiceImpl implements MailService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
             sendGrid.api(request);
-            logger.info("sendToken() - Token was sent");
+            log.info("sendToken() - Token was sent");
         } catch (IOException ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
     }
     private String build(String token, HttpServletRequest httpRequest) {
         Context context = new Context();
         final String fullUrl = ServletUriComponentsBuilder.fromRequestUri(httpRequest).build().toUriString();
-        logger.info("url: "+ fullUrl);
+        log.info("url: {}", fullUrl);
         int in = fullUrl.lastIndexOf("/");
         String baseUrl = fullUrl.substring(0,in);
         String l = baseUrl +"/changePassword?token="+token;

@@ -41,12 +41,14 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     public String createAndSavePasswordResetToken(AdminUser admin) {
         String token = UUID.randomUUID().toString();
         if(admin.getPasswordResetToken() != null){
-            admin.getPasswordResetToken().setToken(token);
+            admin.getPasswordResetToken().setToken(token); // Existing token object is updated!
             admin.getPasswordResetToken().setExpirationDate();
             userRepository.save(admin);
         } else {
             PasswordResetToken passwordResetToken = new PasswordResetToken(token, admin);
+            admin.setPasswordResetToken(passwordResetToken);
             passwordResetTokenRepository.save(passwordResetToken);
+
         }
         return token;
     }

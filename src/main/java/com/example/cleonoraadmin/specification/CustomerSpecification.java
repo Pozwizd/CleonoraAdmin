@@ -1,6 +1,10 @@
 package com.example.cleonoraadmin.specification;
 
 import com.example.cleonoraadmin.entity.Customer;
+import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.entity.OrderStatus;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.DayOfWeek;
@@ -40,5 +44,25 @@ public interface CustomerSpecification {
 
     static Specification<Customer> byEmail(String email) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("email"), email);
+    }
+
+
+    static Specification<Customer> lastOrderWithinDays(int days) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Customer, Order> orders = root.join("orders", JoinType.LEFT);
+            return criteriaBuilder.and(
+                    criteriaBuilder.greaterThanOrEqualTo(orders.get("updated"), LocalDateTime.now().minusDays(days)),
+                    criteriaBuilder.equal(orders.get("status"), OrderStatus.COMPLETED)
+            );
+        };
+    }
+    static Specification<Customer> lastOrderWithinDaysAndWeekAgo(int days) {
+        return (root, query, criteriaBuilder) -> {
+            Join<Customer, Order> orders = root.join("orders", JoinType.LEFT);
+            return criteriaBuilder.and(
+                    criteriaBuilder.greaterThanOrEqualTo(orders.get("updated"), LocalDateTime.now().minusDays(days).minusWeeks(1)),
+                    criteriaBuilder.equal(orders.get("status"), OrderStatus.COMPLETED)
+            );
+        };
     }
 }

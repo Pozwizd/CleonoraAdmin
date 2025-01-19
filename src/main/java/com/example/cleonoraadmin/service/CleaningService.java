@@ -15,6 +15,8 @@ public interface CleaningService {
     Cleaning save(Cleaning cleaning);
     Page<CleaningResponse> getPageAllServices(int page, Integer size, String search);
 
+    Cleaning getCleaning(Long id);
+
     Optional<Cleaning> getServiceById(Long id);
 
     CleaningResponse getServiceResponseById(Long id);

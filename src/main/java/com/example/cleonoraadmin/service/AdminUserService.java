@@ -12,21 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
-AdminUserService
-+ findByUsername(String username): AdminUser
-+ saveNewUser(AdminUser adminUser): AdminUser
-+ getPageAllAdminUsers(int page, Integer size, String search): Page<AdminUserResponse>
-+ ifUserMoreThan(int i): boolean
-+ getAdminUserById(Long id): Optional<AdminUser>
-+ getAdminUserResponseById(Long id): AdminUserResponse
-+ saveNewUserFromRequest(AdminUserRequest adminUserRequest): AdminUserResponse
-+ updateAdminUser(Long id, AdminUserRequest adminUserRequest): AdminUserResponse
-+ deleteAdminUserById(Long id): boolean
-+ getAdminUserProfile(String username): AdminUserProfileResponse
-+ updateAdminUserProfile(AdminUserProfileRequest adminUserRequest): AdminUserProfileResponse
-+ getUserByEmail(String email): Optional<AdminUser>
- */
 
 @Service
 public interface AdminUserService {

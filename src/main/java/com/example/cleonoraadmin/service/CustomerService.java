@@ -29,4 +29,10 @@ public interface CustomerService {
     Integer countAllCustomers();
 
     Integer countDailyNewCustomers();
+
+    Integer countActiveCustomers(int days);
+
+    Integer countActiveCustomersWeekAgo(int days);
+
+    Customer getCustomerByEmail(String email);
 }

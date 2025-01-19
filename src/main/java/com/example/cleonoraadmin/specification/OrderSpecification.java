@@ -2,6 +2,7 @@ package com.example.cleonoraadmin.specification;
 
 import com.example.cleonoraadmin.entity.Customer;
 import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.entity.OrderStatus;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -30,6 +31,10 @@ public interface OrderSpecification {
         };
     }
 
+    static Specification<Order> byStatus(OrderStatus status) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
+    }
+
     static Specification<Order> orderUpdateLastDaily() {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
@@ -40,4 +45,10 @@ public interface OrderSpecification {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.between(root.get("updated"), startDate, endDate);
     }
+
+    static Specification<Order> updatedWithinLastWeek() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("updated"), LocalDateTime.now().minusWeeks(1));
+    }
+
+
 }

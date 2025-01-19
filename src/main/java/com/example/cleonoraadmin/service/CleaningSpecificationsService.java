@@ -18,12 +18,6 @@ public interface CleaningSpecificationsService {
 
     Optional<CleaningSpecifications> getServiceSpecificationsById(Long id);
 
-    /**
-     * Retrieve a ServiceSpecificationsResponse by its ID.
-     *
-     * @param id the ID of the service specification
-     * @return the ServiceSpecificationsResponse corresponding to the given ID
-     */
     ServiceSpecificationsResponse getServiceSpecificationsResponseById(Long id);
 
     ServiceSpecificationsResponse saveNewServiceSpecifications(ServiceSpecificationsRequest serviceSpecificationsRequest);

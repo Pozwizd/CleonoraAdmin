@@ -11,22 +11,28 @@ import java.util.List;
 
 /**
  Workday
- - id: Long
- - date: LocalDate
- - startTime: LocalTime
- - endTime: LocalTime
- - totalAvailableTime: Duration
- --
- - getId(): Long
- - setId(Long id)
- - getDate(): LocalDate
- - setDate(LocalDate date)
- - getStartTime(): LocalTime
- - setStartTime(LocalTime startTime)
- - getEndTime(): LocalTime
- - setEndTime(LocalTime endTime)
- - getTotalAvailableTime(): Duration
- - setTotalAvailableTime(Duration totalAvailableTime)
+- id: Long
+- date: LocalDate
+- startTime: LocalTime
+- endTime: LocalTime
+- lunchStart: LocalTime
+- lunchEnd: LocalTime
+- timeSlots: List<TimeSlot>
+--
++ getTotalAvailableTime(): Duration
++ addTimeSlot(TimeSlot timeSlot): void
++ getId(): Long
++ setId(Long id): void
++ getDate(): LocalDate
++ setDate(LocalDate date): void
++ getStartTime(): LocalTime
++ setStartTime(LocalTime startTime): void
++ getEndTime(): LocalTime
++ setEndTime(LocalTime endTime): void
++ getLunchStart(): LocalTime
++ setLunchStart(LocalTime lunchStart): void
++ getLunchEnd(): LocalTime
++ setLunchEnd(LocalTime lunchEnd): void
  */
 
 
@@ -41,15 +47,15 @@ public class Workday {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private LocalTime lunchStart; // Начало обеда
-    private LocalTime lunchEnd;   // Конец обеда
+    private LocalTime lunchStart;
+    private LocalTime lunchEnd;
 
     @OneToMany(mappedBy = "workday", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimeSlot> timeSlots = new ArrayList<>();
 
     public Duration getTotalAvailableTime() {
         return Duration.between(startTime, endTime).minus(
-                Duration.between(lunchStart, lunchEnd)); // Исключаем обеденное время
+                Duration.between(lunchStart, lunchEnd));
     }
 
     public void addTimeSlot(TimeSlot timeSlot) {

@@ -25,25 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 
-/**
-AdminUserServiceImp
-- adminUserRepository: AdminUserRepository
-- adminUserMapper: AdminUserMapper
-- uploadFile: UploadFile
---
-+ findByUsername(username: String): AdminUser
-+ saveNewUser(adminUser: AdminUser): AdminUser
-+ getPageAllAdminUsers(page: int, size: Integer, search: String): Page<AdminUserResponse>
-+ ifUserMoreThan(i: int): boolean
-+ getAdminUserById(id: Long): Optional<AdminUser>
-+ getAdminUserResponseById(id: Long): AdminUserResponse
-+ saveNewUserFromRequest(adminUserRequest: AdminUserRequest): AdminUserResponse
-+ updateAdminUser(id: Long, adminUserRequest: AdminUserRequest): AdminUserResponse
-+ deleteAdminUserById(id: Long): boolean
-+ loadUserByUsername(username: String): UserDetails
-+ getAdminUserProfile(username: String): AdminUserProfileResponse
-+ updateAdminUserProfile(adminUserRequest: AdminUserProfileRequest): AdminUserProfileResponse
- */
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -140,7 +122,9 @@ public class AdminUserServiceImp implements AdminUserService, UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AdminUser user = findByUsername(username);
-
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())

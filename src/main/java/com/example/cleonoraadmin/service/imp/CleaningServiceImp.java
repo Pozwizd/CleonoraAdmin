@@ -15,11 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@org.springframework.stereotype.Service
+@Service
 @AllArgsConstructor
 @Slf4j
 public class CleaningServiceImp implements CleaningService {
@@ -39,16 +40,15 @@ public class CleaningServiceImp implements CleaningService {
     }
 
     @Override
+    public Cleaning getCleaning(Long id) {
+        return cleaningRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public Optional<Cleaning> getServiceById(Long id) {
         return cleaningRepository.findById(id);
     }
 
-    /**
-     * Retrieve a ServiceResponse by its ID.
-     *
-     * @param id the ID of the service
-     * @return the ServiceResponse corresponding to the given ID
-     */
     @Override
     public CleaningResponse getServiceResponseById(Long id) {
         return cleaningMapper.toResponse(cleaningRepository.findById(id).orElse(null));
@@ -99,9 +99,6 @@ public class CleaningServiceImp implements CleaningService {
         return cleaningRepository.count() > i;
     }
 
-    /**
-     * @return
-     */
     @Override
     public List<TopCleaning> findTopCleaning() {
         return List.of();
