@@ -1,5 +1,6 @@
 package com.example.cleonoraadmin;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UploadFile {
 
@@ -28,7 +30,7 @@ public class UploadFile {
         try {
             file.transferTo(new File(Paths.get(projectPath).toAbsolutePath() + "/" + fileName));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Ошибка при загрузке файла: {}", e.getMessage(), e);
         }
         return "" + Paths.get(projectPath).subpath(Paths.get(projectPath).getNameCount() - 1,
                 Paths.get(projectPath).getNameCount()) + "/" + fileName;

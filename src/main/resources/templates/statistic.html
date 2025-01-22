@@ -28,7 +28,7 @@
                                 <i class="bi bi-currency-dollar"></i>
                             </div>
                             <h6 class="card-subtitle mb-2 text-muted" id="total-sales">Loading...</h6>
-                            <p class="card-text" id="today-sales">Loading...</p>
+                            <p class="card-text" id="last-week-sales">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -60,52 +60,85 @@
 
             <script th:inline="javascript">
                 let basePath = '[[@{/}]]'.replaceAll("\"", "");
-                $(document).ready(function () {
-                    function fetchData() {
-                        $.ajax({
-                            url: 'orders/statistic',
-                            method: 'GET',
-                            success: function (data) {
-                                $('#total-orders').text(data);
-                            },
-                            error: function () {
-                                $('#total-orders').text('0');
-                            }
-                        });
-                        $.ajax({
-                            url: "orders/today",
-                            method: 'GET',
-                            success: function (data) {
-                                $('#today-orders').text('+' + data);
-                            },
-                            error: function () {
-                                $('#today-orders').text('+0');
-                            }
-                        });
-                        $.ajax({
-                            url: 'customers',
-                            method: 'GET',
-                            success: function (data) {
-                                $('#total-customers').text(data);
-                            },
-                            error: function () {
-                                $('#total-customers').text('0');
-                            }
-                        });
-                        $.ajax({
-                            url: 'customers/daily',
-                            method: 'GET',
-                            success: function (data) {
-                                $('#today-customers').text('+' + data);
-                            },
-                            error: function () {
-                                $('#today-customers').text('+0');
-                            }
-                        });
 
-                        $('#active-users').text('N/A');
-                        $('#changes-last-week').text('N/A');
+                document.addEventListener("DOMContentLoaded", function () {
+                    function fetchData() {
+                        fetch('orders/statistic')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('total-orders').textContent = data;
+                            })
+                            .catch(() => {
+                                document.getElementById('total-orders').textContent = '0';
+                            });
+
+                        fetch('orders/today')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('today-orders').textContent = '+' + data;
+                            })
+                            .catch(() => {
+                                document.getElementById('today-orders').textContent = '+0';
+                            });
+
+                        fetch('customers')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('total-customers').textContent = data;
+                            })
+                            .catch(() => {
+                                document.getElementById('total-customers').textContent = '0';
+                            });
+
+                        fetch('customers/daily')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('today-customers').textContent = '+' + data;
+                            })
+                            .catch(() => {
+                                document.getElementById('today-customers').textContent = '+0';
+                            });
+
+                        document.getElementById('active-users').textContent = 'N/A';
+                        document.getElementById('changes-last-week').textContent = 'N/A';
+                        fetch('orders/total-sales')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('total-sales').textContent = data;
+                            })
+                            .catch(() => {
+                                document.getElementById('total-sales').textContent = '0';
+                            });
+
+                        fetch('customers/active')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('active-users').textContent = data;
+                            })
+                            .catch(() => {
+                                document.getElementById('active-users').textContent = '0';
+                            });
+
+                        fetch('customers/active/changes')
+                            .then(response => response.json())
+                            .then(data => {
+                                const formattedData = data >= 0 ? '+' + data : data;
+                                document.getElementById('changes-last-week').textContent = formattedData;
+                            })
+                            .catch(() => {
+                                document.getElementById('changes-last-week').textContent = '0';
+                            });
+
+                        fetch('orders/sales-last-week')
+                            .then(response => response.json())
+                            .then(data => {
+                                document.getElementById('last-week-sales').textContent = data;
+                            })
+                            .catch(() => {
+                                document.getElementById('last-week-sales').textContent = '0';
+                            });
                     }
+
                     fetchData();
                     setInterval(fetchData, 30000);
                 });
@@ -182,7 +215,7 @@
                                             position: 'top',
                                         },
                                         title: {
-                                            display: true,
+                                            display: false,
                                             text: 'Количество заказов по услугам за последние ' + months + ' месяцев'
                                         }
                                     },
@@ -240,7 +273,7 @@
                                             position: 'top',
                                         },
                                         title: {
-                                            display: true,
+                                            display: false,
                                             text: 'Доля топ ' + topN + ' услуг по количеству заказов за последние ' + months + ' месяцев'
                                         },
                                         tooltip: {
@@ -268,11 +301,100 @@
                 });
             </script>
 
+            <!-- Table -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h4 class="fw-bold">Заказы</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th class="text-center">ID</th>
+                                <th class="text-center">Дата</th>
+                                <th class="text-center">Длительность</th>
+                                <th class="text-center">Цена</th>
+                                <th class="text-center">Статус</th>
+                                <th class="text-center">Клиент</th>
+                            </tr>
+                            </thead>
+                            <tbody id="table-body">
+                            <!-- Data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Script to load table data -->
+            <script th:inline="javascript">
+                document.addEventListener('DOMContentLoaded', () => {
+                    loadOrdersData();
+                });
+
+                async function loadOrdersData() {
+                    try {
+                        const response = await fetch(`${basePath}order/getAllOrdersLastWeek?page=0&size=1000&search=`);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        const tableBody = document.getElementById('table-body');
+                        tableBody.innerHTML = '';
+
+                        data.content.forEach(order => {
+                            const row = `
+                                <tr>
+                                    <td class="text-center">${order.id}</td>
+                                    <td class="text-center">${formatDate(order.startDate)} ${formatTime(order.startTime)}</td>
+                                    <td class="text-center">${formatDuration(order.totalDuration)}</td>
+                                    <td class="text-center">${order.price}</td>
+                                    <td class="text-center">${order.status}</td>
+                                    <td class="text-center">${order.customerName}</td>
+                                </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+
+                        if (data.content.length === 0) {
+                            tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Нет данных</td></tr>`;
+                        }
+
+                    } catch (error) {
+                        console.error("Ошибка при загрузке данных:", error);
+                        showToast('error', 'Ошибка', "Ошибка при загрузке данных");
+                    }
+                }
+
+                function formatDate(dateArray) {
+                    if (Array.isArray(dateArray) && dateArray.length === 3) {
+                        const year = dateArray[0];
+                        const month = String(dateArray[1]).padStart(2, '0');
+                        const day = String(dateArray[2]).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                    return '';
+                }
+
+                function formatTime(timeArray) {
+                    if (Array.isArray(timeArray) && timeArray.length >= 2) {
+                        const hours = String(timeArray[0]).padStart(2, '0');
+                        const minutes = String(timeArray[1]).padStart(2, '0');
+                        return `${hours}:${minutes}`;
+                    }
+                    return '';
+                }
+
+                function formatDuration(duration) {
+                    if (duration) {
+                        const totalSeconds = Math.round(duration);
+                        const hours = Math.floor(totalSeconds / 3600);
+                        const minutes = Math.floor((totalSeconds % 3600) / 60);
+                        return `${hours} ч ${minutes} мин`;
+                    }
+                    return '';
+                }
+            </script>
         </div>
-
     </div>
-
 </div>
 </body>
 </html>

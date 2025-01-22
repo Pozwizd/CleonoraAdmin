@@ -1,4 +1,4 @@
-package com.example.cleanorarest.Exception;
+package com.example.cleonoraadmin.exception;
 
 public class CategoryNotFoundException extends RuntimeException {
 

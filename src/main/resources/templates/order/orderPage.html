@@ -128,10 +128,12 @@
 
                             <!-- Услуги -->
                             <div class="col-12">
-                                <h4 class="fw-bold">Услуги</h4>
+                                <h4 class="fw-bold text-center">Услуги</h4>
+                                <div class="text-end">
                                 <button class="btn btn-secondary btn-sm mb-2" id="addService" type="button">
                                     <i class="ti ti-plus"></i> Добавить услугу
                                 </button>
+                                </div>
                                 <table class="table table-bordered" id="servicesTable">
                                     <thead>
                                     <tr>
@@ -391,7 +393,7 @@
 
         async function loadCustomersToModal() {
             try {
-                const response = await fetch(`${basePath}customer/getAllCustomers?page=0&size=1000&search=`);
+                const response = await fetch(`${basePath}customer/getAllCustomers`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -495,7 +497,6 @@
             }
         });
 
-        // Обработчик изменения значения в поле "Показать"
         document.getElementById('pageSize').addEventListener('change', () => {
             pageSize = document.getElementById('pageSize').value;
             currentPage = 0;
@@ -509,7 +510,6 @@
             loadOrders(currentPage, pageSize, currentSearch);
         });
 
-        // Обработчик нажатия на кнопку "Добавить Заказ"
         document.getElementById('createEntity').addEventListener('click', () => {
             document.getElementById('editOrderForm').reset();
             document.querySelector('#servicesTable tbody').innerHTML = '';
@@ -636,10 +636,31 @@
             }
         }
 
+        function getOrdersStatuses() {
+            let orderStatuses = axios.get(`${basePath}order/status`)
+                .then(response => response.data)
+                .catch(error => {
+                    console.error("Ошибка при получении статусов заказов:", error);
+                    throw error;
+                });
+            let select = document.getElementById("orderStatus");
+            orderStatuses.then(data => {
+                select.innerHTML = '';
+                data.forEach(status => {
+                    let option = document.createElement('option');
+                    option.value = status;
+                    option.textContent = status;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+
         document.addEventListener('DOMContentLoaded', () => {
             loadOrders(currentPage, pageSize, currentSearch);
             loadCustomersToModal();
             loadServicesToModal();
+            getOrdersStatuses();
         });
     </script>
 

@@ -41,7 +41,6 @@
                         <tr id="table-head">
                             <th class="text-center">ID</th>
                             <th class="text-center">Имя</th>
-                            <th class="text-center">Фамилия</th>
                             <th class="text-center">Email</th>
                             <th class="text-center">Номер телефона</th>
                             <th class="text-center">Действия</th>
@@ -98,17 +97,6 @@
                                 />
                             </div>
 
-                            <!-- Фамилия -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="customerSurname">Фамилия</label>
-                                <input
-                                        type="text"
-                                        id="customerSurname"
-                                        name="surname"
-                                        class="form-control"
-                                        placeholder="Фамилия клиента"
-                                />
-                            </div>
 
                             <!-- Email -->
                             <div class="col-12 col-md-6">
@@ -134,17 +122,6 @@
                                 />
                             </div>
 
-                            <!-- Пароль -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label" for="customerPassword">Пароль</label>
-                                <input 
-                                        type="password" 
-                                        id="customerPassword" 
-                                        name="password" 
-                                        class="form-control" 
-                                        placeholder="••••••••" 
-                                />
-                            </div>
 
                             <!-- Статус (Активен/Неактивен) -->
                             <div class="col-12 col-md-6">
@@ -198,13 +175,13 @@
                 api: {
                     baseURL: '[[@{/}]]'.replaceAll("\"", ""),
                     endpoints: {
-                        getAll: 'customer/getAllCustomers', // Относительные пути
+                        getAll: 'customer/getAllCustomers',
                         getById: 'customer/{id}',
                         create: 'customer/create',
                         update: 'customer/{id}',
                         delete: 'customer/{id}'
                     },
-                    entityType: 'json' // Указываем, что работаем с JSON
+                    entityType: 'json'
                 },
                 entityName: 'Клиент',
                 tableBodyId: 'table-body',
@@ -220,18 +197,14 @@
                 columns: [
                     { key: 'id', title: 'ID' },
                     { key: 'name', title: 'Имя' },
-                    { key: 'surname', title: 'Фамилия' },
                     { key: 'email', title: 'Email' },
                     { key: 'phoneNumber', title: 'Номер телефона' }
-                    // Столбец "Действия" добавляется автоматически классом GenericTable
                 ],
                 formFields: [
                     { name: 'id', type: 'hidden' },
                     { name: 'name', type: 'text', label: 'Имя', required: true },
-                    { name: 'surname', type: 'text', label: 'Фамилия', required: true },
                     { name: 'email', type: 'email', label: 'Email', required: true },
                     { name: 'phoneNumber', type: 'text', label: 'Номер телефона', required: true },
-                    { name: 'password', type: 'password', label: 'Пароль' }, // Поле необязательно при редактировании
                     { name: 'isActive', type: 'select', label: 'Статус', required: true, selectId: 'customerStatus' } // Используем select для статуса
                 ],
                 toastConfig: {

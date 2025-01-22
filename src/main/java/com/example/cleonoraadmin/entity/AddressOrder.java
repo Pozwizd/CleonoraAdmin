@@ -1,4 +1,4 @@
-package com.example.cleanorarest.entity;
+package com.example.cleonoraadmin.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
