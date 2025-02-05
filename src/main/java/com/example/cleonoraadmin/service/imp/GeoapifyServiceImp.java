@@ -1,12 +1,12 @@
-package com.example.cleanorarest.service.Imp;
+package com.example.cleonoraadmin.service.imp;
 
-import com.example.cleanorarest.Exception.GeoapifyProcessingException;
-import com.example.cleanorarest.controller.CustomerAddressRequest;
-import com.example.cleanorarest.entity.AddressOrder;
+import com.example.cleonoraadmin.exception.GeoapifyProcessingException;
+import com.example.cleonoraadmin.entity.AddressOrder;
+import com.example.cleonoraadmin.model.order.CustomerAddressRequest;
+import com.example.cleonoraadmin.service.GeoapifyService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,7 +31,6 @@ public class GeoapifyServiceImp implements GeoapifyService {
     }
 
     @Override
-    @Cacheable(value = "geoapify", key = "#request.hashCode()")
     public AddressOrder processAddress(CustomerAddressRequest request) {
         if (request == null) return null;
         try {

@@ -1,9 +1,9 @@
-package com.example.cleanorarest.validators.order;
+package com.example.cleonoraadmin.validators.order;
 
-import com.example.cleanorarest.Exception.GeoapifyProcessingException;
-import com.example.cleanorarest.model.order.CustomerAddressRequest;
-import com.example.cleanorarest.entity.AddressOrder;
-import com.example.cleanorarest.service.Imp.GeoapifyService;
+import com.example.cleonoraadmin.entity.AddressOrder;
+import com.example.cleonoraadmin.exception.GeoapifyProcessingException;
+import com.example.cleonoraadmin.model.order.CustomerAddressRequest;
+import com.example.cleonoraadmin.service.GeoapifyService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

@@ -1,16 +1,17 @@
-package com.example.cleanorarest.service.Imp;
+package com.example.cleonoraadmin.service.imp;
 
-import com.example.cleanorarest.config.WorkScheduleConfig;
-import com.example.cleanorarest.entity.Order;
-import com.example.cleanorarest.entity.OrderCleaning;
-import com.example.cleanorarest.entity.TimeSlot;
-import com.example.cleanorarest.entity.Workday;
-import com.example.cleanorarest.repository.OrderCleaningRepository;
-import com.example.cleanorarest.repository.TimeSlotRepository;
-import com.example.cleanorarest.repository.WorkdayRepository;
+import com.example.cleonoraadmin.config.WorkScheduleConfig;
+import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.entity.OrderCleaning;
+import com.example.cleonoraadmin.entity.TimeSlot;
+import com.example.cleonoraadmin.entity.Workday;
+import com.example.cleonoraadmin.repository.OrderCleaningRepository;
+import com.example.cleonoraadmin.repository.TimeSlotRepository;
+import com.example.cleonoraadmin.repository.WorkdayRepository;
+import com.example.cleonoraadmin.service.OrderCleaningSchedulingService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class OrderCleaningSchedulingServiceImp implements OrderCleaningSchedulin
     private final WorkScheduleConfig workScheduleConfig;
     private final WorkdayRepository workdayRepository;
     private final TimeSlotRepository timeSlotRepository;
-    private final com.example.cleanorarest.repository.OrderCleaningRepository orderCleaningRepository;
+    private final com.example.cleonoraadmin.repository.OrderCleaningRepository orderCleaningRepository;
 
     public OrderCleaningSchedulingServiceImp(WorkScheduleConfig workScheduleConfig, WorkdayRepository workdayRepository, TimeSlotRepository timeSlotRepository, OrderCleaningRepository orderCleaningRepository) {
         this.workScheduleConfig = workScheduleConfig;
@@ -42,12 +43,8 @@ public class OrderCleaningSchedulingServiceImp implements OrderCleaningSchedulin
             LocalTime currentTime = order.getStartTime();
             Duration remainingDuration = orderCleaning.getDurationCleaning();
 
-            int maxIterations = 1000;
-            int iteration = 0;
 
-            while (remainingDuration.toMinutes() > 0 && iteration < maxIterations) {
-                iteration++;
-                log.debug("Iteration {}: Date={}, Time={}, RemainingDuration={}", iteration, currentDate, currentTime, remainingDuration);
+            while (remainingDuration.toMinutes() > 0) {
 
                 String dayOfWeek = currentDate.getDayOfWeek().toString().toLowerCase();
                 WorkScheduleConfig.WorkDay workDay = workScheduleConfig.getSchedule().get(dayOfWeek);
@@ -94,10 +91,6 @@ public class OrderCleaningSchedulingServiceImp implements OrderCleaningSchedulin
                 orderCleaning.addTimeSlot(timeSlot);
 
                 Duration slotDuration = Duration.between(currentTime, slotEndTime);
-                if (slotDuration.isNegative() || slotDuration.isZero()) {
-                    log.error("Invalid slot duration: {}", slotDuration);
-                    break;
-                }
 
                 remainingDuration = remainingDuration.minus(slotDuration);
                 currentTime = slotEndTime;
@@ -112,22 +105,18 @@ public class OrderCleaningSchedulingServiceImp implements OrderCleaningSchedulin
                 }
             }
 
-            if (iteration >= maxIterations) {
-                log.error("Reached maximum iterations while creating time slots for orderCleaning: {}", orderCleaning.getId());
-                throw new RuntimeException("Exceeded maximum iterations while creating time slots.");
-            }
             orderCleaningRepository.save(orderCleaning);
         }
-}
+    }
 
     public LocalTime findEndTime(LocalDate date, LocalTime startTime, LocalTime potentialEndTime, LocalTime workdayEnd) {
-            Optional<TimeSlot> overlappingSlot = timeSlotRepository.findFirstByDateAndStartTimeLessThanAndEndTimeGreaterThan(date, potentialEndTime, startTime);
-            if (overlappingSlot.isPresent()) {
-                return overlappingSlot.get().getStartTime();
-            } else {
-                return potentialEndTime.isBefore(workdayEnd) ? potentialEndTime : workdayEnd;
-            }
+        Optional<TimeSlot> overlappingSlot = timeSlotRepository.findFirstByDateAndStartTimeLessThanAndEndTimeGreaterThan(date, potentialEndTime, startTime);
+        if (overlappingSlot.isPresent()) {
+            return overlappingSlot.get().getStartTime();
+        } else {
+            return potentialEndTime.isBefore(workdayEnd) ? potentialEndTime : workdayEnd;
         }
+    }
 
     private TimeSlot createTimeSlot(OrderCleaning orderCleaning, LocalDate date, LocalTime startTime, LocalTime endTime) {
         TimeSlot timeSlot = new TimeSlot();
@@ -136,13 +125,13 @@ public class OrderCleaningSchedulingServiceImp implements OrderCleaningSchedulin
         timeSlot.setEndTime(endTime);
         timeSlot.setOrderCleaning(orderCleaning);
         timeSlot.setWorkday(getOrCreateWorkday(date));
-    return timeSlotRepository.save(timeSlot);
-}
+        return timeSlotRepository.save(timeSlot);
+    }
 
 
-public Workday getOrCreateWorkday(LocalDate date) {
-    String dayOfWeek = date.getDayOfWeek().toString().toLowerCase();
-    WorkScheduleConfig.WorkDay workDay = workScheduleConfig.getSchedule().get(dayOfWeek);
+    public Workday getOrCreateWorkday(LocalDate date) {
+        String dayOfWeek = date.getDayOfWeek().toString().toLowerCase();
+        WorkScheduleConfig.WorkDay workDay = workScheduleConfig.getSchedule().get(dayOfWeek);
 
         if (workDay == null || "off".equalsIgnoreCase(workDay.getStart())) {
             log.info("Attempted to create a workday for a day off: {}", dayOfWeek);

@@ -1,5 +1,6 @@
-package com.example.cleonoraadmin.validators.adminUser.emailValidation;
+package com.example.cleonoraadmin.validators;
 
+import com.example.cleonoraadmin.validators.adminUser.emailValidation.AdminUserEmailUniqueValidator;
 import com.example.cleonoraadmin.validators.customer.emailValidation.CustomerEmailUniqueValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -10,7 +11,7 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 
-@Constraint(validatedBy = EmailUniqueValidator.class, CustomerEmailUniqueValidator.class)
+@Constraint(validatedBy = {AdminUserEmailUniqueValidator.class, CustomerEmailUniqueValidator.class})
 @Target({TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EmailUnique {
