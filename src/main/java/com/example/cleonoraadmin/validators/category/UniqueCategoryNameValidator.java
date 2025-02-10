@@ -1,4 +1,4 @@
-package com.example.cleonoraadmin.validators.adminUser.category;
+package com.example.cleonoraadmin.validators.category;
 
 import com.example.cleonoraadmin.repository.CategoryRepository;
 import jakarta.validation.ConstraintValidator;

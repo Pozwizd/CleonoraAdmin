@@ -1,4 +1,4 @@
-package com.example.cleonoraadmin.validators.adminUser.phoneNumberValidation;
+package com.example.cleonoraadmin.validators.customer.phoneNumberValidation;
 
 import com.example.cleonoraadmin.entity.Customer;
 import com.example.cleonoraadmin.repository.CustomerRepository;
