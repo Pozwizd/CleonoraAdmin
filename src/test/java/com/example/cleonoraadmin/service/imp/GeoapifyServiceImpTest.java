@@ -1,8 +1,9 @@
-package com.example.cleanorarest.service.Imp;
+package com.example.cleonoraadmin.service.imp;
 
-import com.example.cleanorarest.Exception.GeoapifyProcessingException;
-import com.example.cleanorarest.model.order.CustomerAddressRequest;
-import com.example.cleanorarest.entity.AddressOrder;
+
+import com.example.cleonoraadmin.entity.AddressOrder;
+import com.example.cleonoraadmin.exception.GeoapifyProcessingException;
+import com.example.cleonoraadmin.model.order.CustomerAddressRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 

@@ -1,13 +1,14 @@
-package com.example.cleanorarest.service.Imp;
+package com.example.cleonoraadmin.service.imp;
 
-import com.example.cleanorarest.config.WorkScheduleConfig;
-import com.example.cleanorarest.config.WorkScheduleConfig.WorkDay;
-import com.example.cleanorarest.entity.Order;
-import com.example.cleanorarest.entity.OrderCleaning;
-import com.example.cleanorarest.entity.TimeSlot;
-import com.example.cleanorarest.repository.OrderCleaningRepository;
-import com.example.cleanorarest.repository.TimeSlotRepository;
-import com.example.cleanorarest.repository.WorkdayRepository;
+
+import com.example.cleonoraadmin.config.WorkScheduleConfig;
+import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.entity.OrderCleaning;
+import com.example.cleonoraadmin.entity.TimeSlot;
+import com.example.cleonoraadmin.entity.Workday;
+import com.example.cleonoraadmin.repository.OrderCleaningRepository;
+import com.example.cleonoraadmin.repository.TimeSlotRepository;
+import com.example.cleonoraadmin.repository.WorkdayRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,7 +60,7 @@ class OrderCleaningSchedulingServiceImpTest {
         WorkScheduleConfig.WorkDay workDay = new WorkScheduleConfig.WorkDay();
         workDay.setStart(start);
         workDay.setEnd(end);
-        WorkDay.Lunch lunch = new WorkDay.Lunch();
+        WorkScheduleConfig.WorkDay.Lunch lunch = new WorkScheduleConfig.WorkDay.Lunch();
         lunch.setStart(lunchStart);
         lunch.setEnd(lunchEnd);
         workDay.setLunch(lunch);
@@ -111,7 +112,7 @@ class OrderCleaningSchedulingServiceImpTest {
         LocalDate saturday = LocalDate.of(2024, 3, 9); // Saturday
 
         // Act
-        com.example.cleanorarest.entity.Workday workday = orderCleaningSchedulingService.getOrCreateWorkday(saturday);
+        Workday workday = orderCleaningSchedulingService.getOrCreateWorkday(saturday);
 
         // Assert
         assertNull(workday);
@@ -288,36 +289,33 @@ class OrderCleaningSchedulingServiceImpTest {
         assertEquals(LocalTime.of(10, 0), createdSlot.getEndTime());
     }
 
-    /**
-     * Test for {@link OrderCleaningSchedulingServiceImp#createTimeSlotsForOrder(Order)}.
-     * Should skip to next day if order starts after workday ends.
-     */
-//    @Test
-//    void createTimeSlotsForOrder_StartTimeAfterWorkday_SkipsDay() {
-//        // Arrange
-//        setupWorkSchedule(workScheduleConfig);
-//
-//        Order order = new Order();
-//        order.setStartDate(LocalDate.of(2024, 3, 4)); // Monday
-//        order.setStartTime(LocalTime.of(19, 0)); // After workday end
-//        OrderCleaning orderCleaning = new OrderCleaning();
-//        orderCleaning.setDurationCleaning(Duration.ofHours(2));
-//        order.setOrderCleanings(List.of(orderCleaning));
-//
-//        when(orderCleaningRepository.save(any(OrderCleaning.class))).thenReturn(orderCleaning);
-//        when(timeSlotRepository.save(any(TimeSlot.class))).thenAnswer(i -> i.getArguments()[0]);
-//        when(workdayRepository.findByDate(any(LocalDate.class))).thenReturn(Optional.empty());
-//
-//        // Act
-//        orderCleaningSchedulingService.createTimeSlotsForOrder(order);
-//
-//        // Assert
-//        verify(timeSlotRepository, times(1)).save(any(TimeSlot.class));
-//        TimeSlot createdSlot = orderCleaning.getTimeSlots().get(0);
-//        assertEquals(LocalDate.of(2024, 3, 5), createdSlot.getDate()); // Tuesday
-//        assertEquals(LocalTime.of(9, 0), createdSlot.getStartTime());
-//        assertEquals(LocalTime.of(11, 0), createdSlot.getEndTime());
-//    }
+
+    @Test
+    void createTimeSlotsForOrder_StartTimeAfterWorkday_SkipsDay() {
+        // Arrange
+        setupWorkSchedule(workScheduleConfig);
+
+        Order order = new Order();
+        order.setStartDate(LocalDate.of(2024, 3, 5)); // Tuesday
+        order.setStartTime(LocalTime.of(19, 0)); // After workday end
+        OrderCleaning orderCleaning = new OrderCleaning();
+        orderCleaning.setDurationCleaning(Duration.ofHours(2));
+        order.setOrderCleanings(List.of(orderCleaning));
+
+        when(orderCleaningRepository.save(any(OrderCleaning.class))).thenReturn(orderCleaning);
+        when(timeSlotRepository.save(any(TimeSlot.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(workdayRepository.findByDate(any(LocalDate.class))).thenReturn(Optional.empty());
+
+        // Act
+        orderCleaningSchedulingService.createTimeSlotsForOrder(order);
+
+        // Assert
+        verify(timeSlotRepository, times(1)).save(any(TimeSlot.class));
+        TimeSlot createdSlot = orderCleaning.getTimeSlots().get(0);
+        assertEquals(LocalDate.of(2024, 3, 6), createdSlot.getDate()); // Wednesday
+        assertEquals(LocalTime.of(9, 0), createdSlot.getStartTime());
+        assertEquals(LocalTime.of(11, 0), createdSlot.getEndTime());
+    }
 
     /**
      * Test for {@link OrderCleaningSchedulingServiceImp#createTimeSlotsForOrder(Order)}.
@@ -389,11 +387,72 @@ class OrderCleaningSchedulingServiceImpTest {
 
     /**
      * Test for {@link OrderCleaningSchedulingServiceImp#createTimeSlotsForOrder(Order)}.
+     * Should not create a slot if slotDuration is negative.
+     */
+    @Test
+    void createTimeSlotsForOrder_NegativeSlotDuration_DoesNotCreateSlot() {
+        // Arrange
+        setupWorkSchedule(workScheduleConfig);
+
+        Order order = new Order();
+        order.setStartDate(LocalDate.of(2024, 3, 4)); // Monday
+        order.setStartTime(LocalTime.of(10, 0));
+        OrderCleaning orderCleaning = new OrderCleaning();
+        orderCleaning.setDurationCleaning(Duration.ofHours(2));
+        List<OrderCleaning> orderCleanings = new ArrayList<>();
+        orderCleanings.add(orderCleaning);
+        order.setOrderCleanings(orderCleanings);
+
+        // Mock findEndTime to return a time *before* the start time
+        OrderCleaningSchedulingServiceImp spyService = spy(orderCleaningSchedulingService);
+        doReturn(LocalTime.of(9, 0)).when(spyService).findEndTime(any(), any(), any(), any()); // endTime < startTime
+        doCallRealMethod().when(spyService).createTimeSlotsForOrder(any(Order.class));
+
+        when(orderCleaningRepository.save(any(OrderCleaning.class))).thenReturn(orderCleaning);
+
+        // Act
+        spyService.createTimeSlotsForOrder(order);
+
+        // Assert
+        verify(timeSlotRepository, never()).save(any(TimeSlot.class)); // No slot should be created
+        assertTrue(orderCleaning.getTimeSlots().isEmpty());
+    }
+
+    /**
+     * Test for {@link OrderCleaningSchedulingServiceImp#createTimeSlotsForOrder(Order)}.
      * Should throw a RuntimeException when maxIterations is reached.
      */
 
 
-    private final java.util.concurrent.atomic.AtomicInteger loopCounter = new java.util.concurrent.atomic.AtomicInteger(0);
+    /**
+     * Test for {@link OrderCleaningSchedulingServiceImp#createTimeSlotsForOrder(Order)}.
+     * Should throw a RuntimeException when maxIterations is reached.
+     */
+    @Test
+    void createTimeSlotsForOrder_MaxIterationsReached_ThrowsException() {
+        // Arrange
+        setupWorkSchedule(workScheduleConfig);
+
+        Order order = new Order();
+        order.setStartDate(LocalDate.of(2024, 3, 4)); // Monday
+        order.setStartTime(LocalTime.of(9, 0));
+        OrderCleaning orderCleaning = new OrderCleaning();
+        orderCleaning.setDurationCleaning(Duration.ofDays(10)); // Very long duration
+        List<OrderCleaning> orderCleanings = new ArrayList<>();
+        orderCleanings.add(orderCleaning);
+        order.setOrderCleanings(orderCleanings);
+
+        // Mock findEndTime to return a time *very close* to startTime, so the loop continues indefinitely
+        OrderCleaningSchedulingServiceImp spyService = spy(orderCleaningSchedulingService);
+        doReturn(LocalTime.of(9, 0).plusMinutes(1)).when(spyService).findEndTime(any(), any(), any(), any());
+        doCallRealMethod().when(spyService).createTimeSlotsForOrder(any(Order.class));
+
+        when(orderCleaningRepository.save(any(OrderCleaning.class))).thenReturn(orderCleaning);
+        when(workdayRepository.findByDate(any(LocalDate.class))).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> spyService.createTimeSlotsForOrder(order));
+    }
 
     /**
      * Test for {@link OrderCleaningSchedulingServiceImp#calculateEndDate(Order)}.

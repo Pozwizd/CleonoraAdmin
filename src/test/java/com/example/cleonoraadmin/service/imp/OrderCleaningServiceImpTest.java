@@ -1,8 +1,9 @@
-package com.example.cleanorarest.service.Imp;
+package com.example.cleonoraadmin.service.imp;
 
-import com.example.cleanorarest.entity.Order;
-import com.example.cleanorarest.repository.OrderCleaningRepository;
-import com.example.cleanorarest.repository.OrderRepository;
+
+import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.repository.OrderCleaningRepository;
+import com.example.cleonoraadmin.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
