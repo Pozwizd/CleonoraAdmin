@@ -106,7 +106,6 @@ class AdminUserServiceImpTest {
 
         List<AdminUser> users = Arrays.asList(user1, user2);
 
-        // Создаем страницу пользователей
         Page<AdminUser> userPage = new PageImpl<>(users, pageRequest, users.size());
 
         // Создаем ответы
@@ -125,16 +124,13 @@ class AdminUserServiceImpTest {
         when(adminUserRepository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(userPage);
         when(adminUserMapper.adminUsertoResponsePage(userPage)).thenReturn(new PageImpl<>(responses, pageRequest, responses.size()));
 
-        // Act
         Page<AdminUserResponse> result = adminUserService.getPageAllAdminUsers(page, size, search);
 
-        // Assert
         assertNotNull(result);
         assertEquals(responses.size(), result.getContent().size());
         assertEquals("John", result.getContent().get(0).getName());
         assertEquals("Jane", result.getContent().get(1).getName());
 
-        // Проверяем взаимодействие с зависимостями
         verify(adminUserRepository, times(1)).findAll(any(Specification.class), eq(pageRequest));
         verify(adminUserMapper, times(1)).adminUsertoResponsePage(userPage);
     }

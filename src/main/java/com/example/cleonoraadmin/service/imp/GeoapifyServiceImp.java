@@ -36,7 +36,6 @@ public class GeoapifyServiceImp implements GeoapifyService {
         try {
             String url;
             if (request.getLat() != null && request.getLon() != null) {
-                // Reverse geocoding
                 url = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/reverse")
                         .queryParam("lat", request.getLat())
                         .queryParam("lon", request.getLon())
@@ -46,7 +45,6 @@ public class GeoapifyServiceImp implements GeoapifyService {
                         .encode()
                         .toUriString();
             } else {
-                // Geocoding address
                 url = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/search")
                         .queryParam("housenumber", request.getHouseNumber())
                         .queryParam("street", request.getStreet())

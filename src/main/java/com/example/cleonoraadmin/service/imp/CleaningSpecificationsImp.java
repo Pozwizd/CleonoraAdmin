@@ -58,12 +58,6 @@ public class CleaningSpecificationsImp implements CleaningSpecificationsService 
         return serviceSpecificationsRepository.findById(id);
     }
 
-    /**
-     * Retrieve a ServiceSpecificationsResponse by its ID.
-     *
-     * @param id the ID of the service specification
-     * @return the ServiceSpecificationsResponse corresponding to the given ID
-     */
     @Override
     public ServiceSpecificationsResponse getServiceSpecificationsResponseById(Long id) {
         return cleaningSpecificationsMapper.toResponse(serviceSpecificationsRepository.findById(id).orElse(null));

@@ -349,8 +349,6 @@ public class CustomerServiceImpTest {
         verify(customerRepository, times(1)).findByEmail(email);
     }
 
-
-    // Helper methods for creating test data
     private Customer createCustomer(Long id, String name) {
         Customer customer = new Customer();
         customer.setId(id);

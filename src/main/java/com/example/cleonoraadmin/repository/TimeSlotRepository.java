@@ -34,5 +34,6 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long>, JpaSp
     void deleteByOrderCleaning(OrderCleaning oc);
 
     Optional<TimeSlot> findFirstByDateAndStartTimeLessThanAndEndTimeGreaterThan(LocalDate date, LocalTime startTime, LocalTime endTime);
+
     TimeSlot findByDateAndStartTimeAndEndTime(LocalDate date, LocalTime startTime, LocalTime endTime);
 }

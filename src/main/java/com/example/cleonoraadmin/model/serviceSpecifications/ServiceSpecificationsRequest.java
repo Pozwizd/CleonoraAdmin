@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * DTO for {@link CleaningSpecifications}
  */
-
 @Data
 public class ServiceSpecificationsRequest {
 

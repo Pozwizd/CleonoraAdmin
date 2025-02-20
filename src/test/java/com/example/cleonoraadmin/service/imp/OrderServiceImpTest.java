@@ -1,52 +1,73 @@
 package com.example.cleonoraadmin.service.imp;
 
-import com.example.cleonoraadmin.config.WorkScheduleConfig;
-import com.example.cleonoraadmin.entity.*;
-import com.example.cleonoraadmin.model.SalesChartDataDTO;
-import com.example.cleonoraadmin.model.SalesChartProjection;
-import com.example.cleonoraadmin.model.TopCleaningDTO;
-import com.example.cleonoraadmin.model.TopCleaningProjection;
-
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import java.util.*;
-
-import com.example.cleonoraadmin.model.order.*;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-
 import org.mockito.Mock;
-
+import org.mockito.Mockito;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
+import com.example.cleonoraadmin.config.WorkScheduleConfig;
+import com.example.cleonoraadmin.entity.Cleaning;
+import com.example.cleonoraadmin.entity.CleaningSpecifications;
+import com.example.cleonoraadmin.entity.Customer;
+import com.example.cleonoraadmin.entity.Order;
+import com.example.cleonoraadmin.entity.OrderCleaning;
+import com.example.cleonoraadmin.entity.OrderStatus;
 import com.example.cleonoraadmin.mapper.OrderCleaningMapper;
 import com.example.cleonoraadmin.mapper.OrderMapper;
+import com.example.cleonoraadmin.model.SalesChartDataDTO;
+import com.example.cleonoraadmin.model.SalesChartProjection;
+import com.example.cleonoraadmin.model.TopCleaningDTO;
+import com.example.cleonoraadmin.model.TopCleaningProjection;
+import com.example.cleonoraadmin.model.order.CustomerAddressRequest;
+import com.example.cleonoraadmin.model.order.OrderCleaningRequest;
+import com.example.cleonoraadmin.model.order.OrderCleaningResponse;
+import com.example.cleonoraadmin.model.order.OrderRequest;
+import com.example.cleonoraadmin.model.order.OrderResponse;
 import com.example.cleonoraadmin.repository.OrderRepository;
 import com.example.cleonoraadmin.repository.TimeSlotRepository;
 import com.example.cleonoraadmin.service.CleaningService;
 import com.example.cleonoraadmin.service.CustomerService;
-import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
-class OrderServiceImpTest2 {
+class OrderServiceImpTest {
 
     @Mock
     private OrderRepository orderRepository;
@@ -82,7 +103,7 @@ class OrderServiceImpTest2 {
 
     @Test
     void createOrder_shouldCreateOrderSuccessfully() {
-        // Arrange
+
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.setCustomerId(1L);
         com.example.cleonoraadmin.model.order.OrderCleaningRequest orderCleaningRequest = new com.example.cleonoraadmin.model.order.OrderCleaningRequest();
@@ -105,10 +126,8 @@ class OrderServiceImpTest2 {
         when(orderRepository.save(order)).thenReturn(order);
         when(orderMapper.toResponse(order, orderCleaningMapper)).thenReturn(orderResponse);
 
-        // Act
         OrderResponse result = orderService.createOrder(orderRequest);
 
-        // Assert
         verify(orderMapper).toEntity(orderRequest);
         verify(geoapifyService).processAddress(any());
         verify(orderCleaningSchedulingServiceImp).createTimeSlotsForOrder(order);
@@ -119,7 +138,7 @@ class OrderServiceImpTest2 {
 
     @Test
     void updateOrder_shouldUpdateOrderSuccessfully() {
-        // Arrange
+
         OrderRequest updatedOrderRequest = new OrderRequest();
         com.example.cleonoraadmin.model.order.OrderCleaningRequest orderCleaningRequest = new com.example.cleonoraadmin.model.order.OrderCleaningRequest();
         updatedOrderRequest.setOrderCleanings(List.of(orderCleaningRequest));
@@ -139,10 +158,8 @@ class OrderServiceImpTest2 {
         when(orderRepository.save(existingOrder)).thenReturn(existingOrder);
         when(orderMapper.toResponse(existingOrder, orderCleaningMapper)).thenReturn(orderResponse);
 
-        // Act
         OrderResponse result = orderService.updateOrder(updatedOrderRequest);
 
-        // Assert
         verify(orderRepository).findById(updatedOrderRequest.getId());
         verify(geoapifyService).processAddress(any());
         verify(timeSlotRepository).deleteAll(anyList());
@@ -155,7 +172,6 @@ class OrderServiceImpTest2 {
 
     @Test
     void getOrderById_shouldReturnOrder_whenOrderExists() {
-        // Arrange
         Long orderId = 1L;
         Order order = new Order();
         OrderResponse orderResponse = new OrderResponse();
@@ -163,22 +179,18 @@ class OrderServiceImpTest2 {
         when(orderRepository.findById(orderId)).thenReturn(java.util.Optional.of(order));
         when(orderMapper.toResponse(order, orderCleaningMapper)).thenReturn(orderResponse);
 
-        // Act
         OrderResponse result = orderService.getOrderById(orderId);
 
-        // Assert
         verify(orderRepository).findById(orderId);
         verify(orderMapper).toResponse(order, orderCleaningMapper);
     }
 
     @Test
     void getOrderById_shouldThrowException_whenOrderDoesNotExist() {
-        // Arrange
         Long orderId = 1L;
 
         when(orderRepository.findById(orderId)).thenReturn(java.util.Optional.empty());
 
-        // Act & Assert
         org.junit.jupiter.api.Assertions.assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> {
             orderService.getOrderById(orderId);
         });
@@ -188,35 +200,28 @@ class OrderServiceImpTest2 {
 
     @Test
     void deleteOrder_shouldReturnTrue_whenDeletionIsSuccessful() {
-        // Arrange
         Long orderId = 1L;
         doNothing().when(orderRepository).deleteById(orderId);
 
-        // Act
         boolean result = orderService.deleteOrder(orderId);
 
-        // Assert
         verify(orderRepository).deleteById(orderId);
         org.junit.jupiter.api.Assertions.assertTrue(result);
     }
 
     @Test
     void deleteOrder_shouldReturnFalse_whenDeletionFails() {
-        // Arrange
         Long orderId = 1L;
         doThrow(new RuntimeException("Deletion failed")).when(orderRepository).deleteById(orderId);
 
-        // Act
         boolean result = orderService.deleteOrder(orderId);
 
-        // Assert
         verify(orderRepository).deleteById(orderId);
         org.junit.jupiter.api.Assertions.assertFalse(result);
     }
 
     @Test
     void getPageAllOrders_shouldReturnPageOfOrders() {
-        // Arrange
         int page = 0;
         int size = 10;
         String search = "";
@@ -228,17 +233,14 @@ class OrderServiceImpTest2 {
         when(orderRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(pageRequest))).thenReturn(orderPage);
         when(orderMapper.toPageResponse(orderPage, orderCleaningMapper)).thenReturn(orderResponsePage);
 
-        // Act
         Page<OrderResponse> result = orderService.getPageAllOrders(page, size, search);
 
-        // Assert
         verify(orderRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(pageRequest));
         verify(orderMapper).toPageResponse(orderPage, orderCleaningMapper);
     }
 
     @Test
     void getPageAllOrdersLastWeek_shouldReturnPageOfOrders() {
-        // Arrange
         int page = 0;
         int size = 10;
         String search = "";
@@ -249,17 +251,14 @@ class OrderServiceImpTest2 {
         when(orderRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(pageRequest))).thenReturn(orderPage);
         when(orderMapper.toPageResponse(orderPage, orderCleaningMapper)).thenReturn(orderResponsePage);
 
-        // Act
         Page<OrderResponse> result = orderService.getPageAllOrdersLastWeek(page, size, search);
 
-        // Assert
         verify(orderRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(pageRequest));
         verify(orderMapper).toPageResponse(orderPage, orderCleaningMapper);
     }
 
     @Test
     void calculateSalesLastWeek_shouldReturnCorrectSalesAmount() {
-        // Arrange
         Order order1 = new Order();
         order1.setPrice(BigDecimal.valueOf(100));
         Order order2 = new Order();
@@ -268,10 +267,8 @@ class OrderServiceImpTest2 {
 
         when(orderRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class))).thenReturn(orders);
 
-        // Act
         BigDecimal result = orderService.calculateSalesLastWeek();
 
-        // Assert
         verify(orderRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class));
         org.junit.jupiter.api.Assertions.assertEquals(BigDecimal.valueOf(300), result);
     }
@@ -291,46 +288,37 @@ class OrderServiceImpTest2 {
 
     @Test
     void ifOrderMoreThan_shouldReturnFalse_whenOrderCountIsLessThanGivenValue() {
-        // Arrange
         int i = 5;
         when(orderRepository.count()).thenReturn(4L);
-        // Act
+
         boolean result = orderService.ifOrderMoreThan(i);
 
-        // Assert
         verify(orderRepository).count();
         org.junit.jupiter.api.Assertions.assertFalse(result);
     }
 
     @Test
     void countCompletedOrders_shouldReturnCorrectCount() {
-        // Arrange
         when(orderRepository.countCompletedOrders()).thenReturn(5);
 
-        // Act
         Integer result = orderService.countCompletedOrders();
 
-        //Assert
         verify(orderRepository).countCompletedOrders();
         org.junit.jupiter.api.Assertions.assertEquals(5, result);
     }
 
     @Test
     void countDailyCompletedOrders_shouldReturnCorrectCount() {
-        // Arrange
         when(orderRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class))).thenReturn(List.of(new Order(), new Order()));
 
-        // Act
         Integer result = orderService.countDailyCompletedOrders();
 
-        //Assert
         verify(orderRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class));
         org.junit.jupiter.api.Assertions.assertEquals(2, result);
     }
 
     @Test
     void calculateTotalSales_shouldReturnCorrectAmount() {
-        // Arrange
         Order order1 = new Order();
         order1.setPrice(BigDecimal.valueOf(100));
         Order order2 = new Order();
@@ -339,17 +327,14 @@ class OrderServiceImpTest2 {
 
         when(orderRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class))).thenReturn(orders);
 
-        // Act
         BigDecimal result = orderService.calculateTotalSales();
 
-        // Assert
         verify(orderRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class));
         org.junit.jupiter.api.Assertions.assertEquals(BigDecimal.valueOf(300), result);
     }
 
     @Test
     void getTopCleanings_shouldReturnCorrectData() {
-        // Arrange
         int topN = 3;
         int months = 6;
         YearMonth startYearMonth = YearMonth.now().minusMonths(months - 1);
@@ -363,10 +348,8 @@ class OrderServiceImpTest2 {
 
         when(orderRepository.findTopCleanings(eq(startDate), any(PageRequest.class))).thenReturn(projections);
 
-        // Act
         List<TopCleaningDTO> result = orderService.getTopCleanings(topN, months);
 
-        // Assert
         verify(orderRepository).findTopCleanings(eq(startDate), any(PageRequest.class));
         Assertions.assertEquals(topN, result.size());
         Assertions.assertEquals("Cleaning A", result.get(0).getName());
@@ -397,52 +380,7 @@ class OrderServiceImpTest2 {
         };
     }
 
-    @Test
-    void getSalesChartData_shouldReturnCorrectData() {
-        // Arrange
-        int topN = 2;
-        int months = 3;
 
-        // Mock YearMonth.now() to return a specific date (February 2025)
-        try (MockedStatic<YearMonth> mockedYearMonth = Mockito.mockStatic(YearMonth.class)) {
-            mockedYearMonth.when(YearMonth::now).thenAnswer(invocation -> YearMonth.of(2025, Month.FEBRUARY));
-            YearMonth currentYearMonth = YearMonth.now();
-            YearMonth startYearMonth = currentYearMonth.minusMonths(months - 1);
-            LocalDate startDate = startYearMonth.atDay(1);
-
-
-            List<TopCleaningProjection> topCleanings = List.of(
-                    createMockProjection("Cleaning A", 100L),
-                    createMockProjection("Cleaning B", 50L)
-            );
-
-            List<SalesChartProjection> salesData = List.of(
-                    createMockSalesData("Cleaning A", 2025, 1, 50L),
-                    createMockSalesData("Cleaning A", 2025, 2, 30L),
-                    createMockSalesData("Cleaning B", 2025, 1, 20L)
-            );
-
-            when(orderRepository.findTopCleanings(eq(startDate), any(PageRequest.class))).thenReturn(topCleanings);
-            when(orderRepository.findSalesDataByMonth(eq(startDate))).thenReturn(salesData);
-
-            // Act
-            SalesChartDataDTO result = orderService.getSalesChartData(topN, months);
-
-            // Assert
-            verify(orderRepository).findTopCleanings(eq(startDate), any(PageRequest.class));
-            verify(orderRepository).findSalesDataByMonth(eq(startDate));
-            Assertions.assertEquals(months, result.getLabels().size());
-            Assertions.assertEquals(2, result.getDatasets().size()); // Number of top cleanings
-            Assertions.assertTrue(result.getDatasets().containsKey("Cleaning A"));
-            Assertions.assertTrue(result.getDatasets().containsKey("Cleaning B"));
-            Assertions.assertEquals(50L, result.getDatasets().get("Cleaning A").get(0));
-            Assertions.assertEquals(30L, result.getDatasets().get("Cleaning A").get(1));
-            Assertions.assertEquals(20L, result.getDatasets().get("Cleaning B").get(0));
-            Assertions.assertEquals(0L, result.getDatasets().get("Cleaning B").get(1)); // Should be initialized to 0
-            Assertions.assertEquals(0L, result.getDatasets().get("Cleaning A").get(2));
-            Assertions.assertEquals(0L, result.getDatasets().get("Cleaning B").get(2));
-        }
-    }
 
     private SalesChartProjection createMockSalesData(String name, Integer year, Integer month, Long count) {
         return new SalesChartProjection() {
@@ -676,27 +614,92 @@ class OrderServiceImpTest2 {
     void getSalesChartData_ShouldReturnSalesChartDataDTO() {
         int topN = 3;
         int months = 6;
+
+        // Топ-уборки
         List<TopCleaningProjection> topCleaningsProjections = Arrays.asList(
                 createTopCleaningProjection("Cleaning 1", 10L),
                 createTopCleaningProjection("Cleaning 2", 8L),
                 createTopCleaningProjection("Cleaning 3", 5L)
         );
+
+        // Данные по продажам (к примеру, январь 2025 года)
         List<SalesChartProjection> salesChartProjections = Arrays.asList(
-                createSalesChartProjection("Cleaning 1", 2024L, 1L, 5L),
-                createSalesChartProjection("Cleaning 2", 2024L, 1L, 3L)
+                createSalesChartProjection("Cleaning 1", 2025L, 1L, 5L), // Январь 2025
+                createSalesChartProjection("Cleaning 2", 2025L, 1L, 3L)  // Январь 2025
         );
 
+        // Моки
         when(orderRepository.findTopCleanings(Mockito.any(), Mockito.any())).thenReturn(topCleaningsProjections);
         when(orderRepository.findSalesDataByMonth(Mockito.any())).thenReturn(salesChartProjections);
 
+        // Получение результата
         SalesChartDataDTO result = orderService.getSalesChartData(topN, months);
 
+        // Проверки
         assertNotNull(result);
         assertNotNull(result.getLabels());
         assertNotNull(result.getDatasets());
+
+        // Проверка корректности работы с репозиториями
         verify(orderRepository, times(1)).findTopCleanings(Mockito.any(), Mockito.any());
         verify(orderRepository, times(1)).findSalesDataByMonth(Mockito.any());
+
+        // Проверка, что datasets содержит правильные данные для каждого cleaning
+        Map<String, List<Long>> datasets = result.getDatasets();
+
+        // Печать для отладки
+        System.out.println("Start YearMonth: " + result.getLabels());
+
+        // Проверка для "Cleaning 1"
+        List<Long> cleaning1Data = datasets.get("Cleaning 1");
+        assertNotNull(cleaning1Data);
+        assertEquals(6, cleaning1Data.size());
+
+        // Печать для отладки
+        System.out.println("Cleaning 1 Data: " + cleaning1Data);
+
+        // Убедимся, что 5 стоит на пятом месяце (январь 2024)
+        assertEquals(Long.valueOf(5), cleaning1Data.get(4)); // Январь 2024 должен быть равен 5
+        for (int i = 0; i < 4; i++) {
+            assertEquals(Long.valueOf(0), cleaning1Data.get(i));
+        }
+        for (int i = 5; i < cleaning1Data.size(); i++) {
+            assertEquals(Long.valueOf(0), cleaning1Data.get(i));
+        }
+
+
+        // Проверка для "Cleaning 2"
+        List<Long> cleaning2Data = datasets.get("Cleaning 2");
+        assertNotNull(cleaning2Data);
+        assertEquals(6, cleaning2Data.size());
+
+        // Печать для отладки
+        System.out.println("Cleaning 2 Data: " + cleaning2Data);
+
+        // Убедимся, что 3 стоит на пятом месяце (январь 2024)
+        assertEquals(Long.valueOf(3), cleaning2Data.get(4)); // Январь 2024 должен быть равен 3
+        for (int i = 0; i < 4; i++) {
+            assertEquals(Long.valueOf(0), cleaning2Data.get(i));
+        }
+        for (int i = 5; i < cleaning2Data.size(); i++) {
+            assertEquals(Long.valueOf(0), cleaning2Data.get(i));
+        }
+
+        // Проверка для "Cleaning 3"
+        List<Long> cleaning3Data = datasets.get("Cleaning 3");
+        assertNotNull(cleaning3Data);
+        assertEquals(6, cleaning3Data.size());
+
+        // Печать для отладки
+        System.out.println("Cleaning 3 Data: " + cleaning3Data);
+
+        for (int i = 0; i < cleaning3Data.size(); i++) {
+            assertEquals(Long.valueOf(0), cleaning3Data.get(i)); // "Cleaning 3" нет в salesData, поэтому все 0
+        }
     }
+
+
+
 
 
     @Test
@@ -713,34 +716,6 @@ class OrderServiceImpTest2 {
     }
 
 
-//    @Test
-//    void createOrder_SimpleTest_ShouldSaveOrder() {
-//        // Arrange
-//        OrderRequest orderRequest = new OrderRequest();
-//        orderRequest.setCustomerId(1L);
-//        orderRequest.setStatus(OrderStatus.NEW);
-//        OrderCleaningRequest orderCleaningRequest = new OrderCleaningRequest();
-//        orderCleaningRequest.setCleaningId(1L);
-//        orderCleaningRequest.setNumberUnits(1);
-//        orderRequest.setOrderCleanings(Collections.singletonList(orderCleaningRequest));
-//
-//        Customer customer = new Customer(); // Minimal customer
-//        customer.setId(1L);
-//
-//        Order order = new Order(); // Minimal order for saving
-//        order.setId(1L); // Set an ID to simulate saving
-//
-//        when(customerRepository.findById(orderRequest.getCustomerId())).thenReturn(Optional.of(customer));
-//        when(orderMapper.toEntity(any(OrderRequest.class), any(CustomerRepository.class), any(OrderCleaningMapper.class), any(CleaningRepository.class))).thenReturn(new Order());
-//        when(orderRepository.save(any(Order.class))).thenReturn(order);
-//
-//        // Act
-//        OrderResponse response = orderService.createOrder(orderRequest);
-//
-//        // Assert
-//        assertNotNull(response); // Check that a response is returned
-//        verify(orderRepository).save(any(Order.class)); // Verify that save was called
-//    }
 
     private WorkScheduleConfig createWorkScheduleConfig() {
         WorkScheduleConfig config = new WorkScheduleConfig();
@@ -756,7 +731,6 @@ class OrderServiceImpTest2 {
         mondayWorkDay.setLunch(mondayLunch);
         schedule.put("monday", mondayWorkDay);
 
-        // Вторник (аналогично понедельнику)
         WorkScheduleConfig.WorkDay tuesdayWorkDay = new WorkScheduleConfig.WorkDay();
         tuesdayWorkDay.setStart("09:00");
         tuesdayWorkDay.setEnd("18:00");
@@ -766,7 +740,6 @@ class OrderServiceImpTest2 {
         tuesdayWorkDay.setLunch(tuesdayLunch);
         schedule.put("tuesday", tuesdayWorkDay);
 
-        // Среда (аналогично понедельнику)
         WorkScheduleConfig.WorkDay wednesdayWorkDay = new WorkScheduleConfig.WorkDay();
         wednesdayWorkDay.setStart("09:00");
         wednesdayWorkDay.setEnd("18:00");
@@ -776,7 +749,6 @@ class OrderServiceImpTest2 {
         wednesdayWorkDay.setLunch(wednesdayLunch);
         schedule.put("wednesday", wednesdayWorkDay);
 
-        // Четверг (аналогично понедельнику)
         WorkScheduleConfig.WorkDay thursdayWorkDay = new WorkScheduleConfig.WorkDay();
         thursdayWorkDay.setStart("09:00");
         thursdayWorkDay.setEnd("18:00");
@@ -786,7 +758,6 @@ class OrderServiceImpTest2 {
         thursdayWorkDay.setLunch(thursdayLunch);
         schedule.put("thursday", thursdayWorkDay);
 
-        // Пятница (аналогично понедельнику)
         WorkScheduleConfig.WorkDay fridayWorkDay = new WorkScheduleConfig.WorkDay();
         fridayWorkDay.setStart("09:00");
         fridayWorkDay.setEnd("18:00");
@@ -796,7 +767,6 @@ class OrderServiceImpTest2 {
         fridayWorkDay.setLunch(fridayLunch);
         schedule.put("friday", fridayWorkDay);
 
-        // Суббота - ВЫХОДНОЙ
         WorkScheduleConfig.WorkDay saturdayWorkDay = new WorkScheduleConfig.WorkDay();
         saturdayWorkDay.setStart("off");
         saturdayWorkDay.setEnd("off");
@@ -806,7 +776,6 @@ class OrderServiceImpTest2 {
         saturdayWorkDay.setLunch(saturdayLunch);
         schedule.put("saturday", saturdayWorkDay);
 
-        // Воскресенье - ВЫХОДНОЙ
         WorkScheduleConfig.WorkDay sundayWorkDay = new WorkScheduleConfig.WorkDay();
         sundayWorkDay.setStart("off");
         sundayWorkDay.setEnd("off");

@@ -8,12 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
-AdminUserRepository
-+ findByEmail(String email): Optional<AdminUser>
-+ findUserByEmail(String name): List<AdminUser>
-+ findByPhoneNumber(String phoneNumber): Optional<AdminUser>
- */
 
 @Repository
 public interface AdminUserRepository extends JpaRepository<AdminUser, Long>, JpaSpecificationExecutor<AdminUser> {

@@ -48,13 +48,8 @@ public class OrderServiceImp implements OrderService {
     private final OrderCleaningSchedulingServiceImp
             orderCleaningSchedulingServiceImp;
     private final CleaningService cleaningService;
-
-
-
     private final OrderRepository orderRepository;
     private final TimeSlotRepository timeSlotRepository;
-
-
 
     @Transactional
     @Override

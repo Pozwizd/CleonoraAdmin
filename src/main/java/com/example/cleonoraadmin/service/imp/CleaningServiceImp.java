@@ -57,7 +57,6 @@ public class CleaningServiceImp implements CleaningService {
     @Override
     public CleaningResponse saveNewService(CleaningRequest cleaningRequest) {
         try {
-            // Преобразование в сущность и сохранение
             Cleaning cleaning = cleaningMapper.toEntity(cleaningRequest);
             Cleaning savedCleaning = cleaningRepository.save(cleaning);
             return cleaningMapper.toResponse(savedCleaning);

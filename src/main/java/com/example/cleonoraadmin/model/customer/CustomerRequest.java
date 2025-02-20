@@ -12,7 +12,6 @@ import java.io.Serializable;
 /**
  * DTO for {@link Customer}
  */
-
 @Data
 public class CustomerRequest implements Serializable {
     Long id;

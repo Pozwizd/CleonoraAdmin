@@ -99,9 +99,7 @@ public class AdminController {
             if (existingUser.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
-
-            return ResponseEntity.ok(adminUserService.updateAdminUser(id, adminUserRequest)); // Возвращаем обновленного пользователя
-
+            return ResponseEntity.ok(adminUserService.updateAdminUser(id, adminUserRequest));
         } catch (DataIntegrityViolationException e) {
             log.error("Ошибка базы данных при обновлении пользователя: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body("Ошибка: Нарушение уникальности данных.");

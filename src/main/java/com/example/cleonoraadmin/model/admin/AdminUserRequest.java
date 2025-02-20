@@ -5,9 +5,7 @@ import com.example.cleonoraadmin.validators.FieldPhoneUnique;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-/**
- * 
- */
+
 @Data
 @EmailUnique
 @FieldPhoneUnique

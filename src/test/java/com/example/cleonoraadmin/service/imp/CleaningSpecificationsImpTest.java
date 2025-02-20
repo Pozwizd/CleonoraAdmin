@@ -69,15 +69,15 @@ public class CleaningSpecificationsImpTest {
 
         when(serviceSpecificationsRepository.findAll()).thenReturn(specificationsList);
         when(serviceSpecificationsMapper.toResponse(any(CleaningSpecifications.class)))
-                .thenReturn(responseList.get(1)) // for spec 2
-                .thenReturn(responseList.get(0)); // for spec 1
+                .thenReturn(responseList.get(1))
+                .thenReturn(responseList.get(0));
 
         List<ServiceSpecificationsResponse> result = cleaningSpecificationsService.getAllServiceSpecifications();
 
         assertNotNull(result);
         assertEquals(responseList, result);
-        assertEquals(responseList.get(0).getId(), result.get(0).getId()); // Check order
-        assertEquals(responseList.get(1).getId(), result.get(1).getId()); // Check order
+        assertEquals(responseList.get(0).getId(), result.get(0).getId());
+        assertEquals(responseList.get(1).getId(), result.get(1).getId());
         verify(serviceSpecificationsRepository, times(1)).findAll();
         verify(serviceSpecificationsMapper, times(2)).toResponse(any(CleaningSpecifications.class));
     }
@@ -276,8 +276,6 @@ public class CleaningSpecificationsImpTest {
         verify(serviceSpecificationsRepository, times(1)).count();
     }
 
-
-    // Helper methods for creating test data
     private CleaningSpecifications createCleaningSpecifications(Long id, String name) {
         CleaningSpecifications specifications = new CleaningSpecifications();
         specifications.setId(id);

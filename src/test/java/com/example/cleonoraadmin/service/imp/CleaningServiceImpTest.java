@@ -62,7 +62,6 @@ public class CleaningServiceImpTest {
         Page<Cleaning> cleaningPage = new PageImpl<>(List.of(createCleaning(1L, "Уборка 1"), createCleaning(2L, "Уборка 2")), pageRequest, 2);
         Page<CleaningResponse> cleaningResponsePage = new PageImpl<>(List.of(createCleaningResponse(1L, "Уборка 1"), createCleaningResponse(2L, "Уборка 2")), pageRequest, 2);
 
-        // Исправленная строка: приведение Mockito.any() к Specification<Cleaning>
         when(cleaningRepository.findAll(Mockito.any(Specification.class), Mockito.eq(pageRequest))).thenReturn(cleaningPage);
         when(cleaningMapper.toResponsePage(cleaningPage)).thenReturn(cleaningResponsePage);
 
@@ -71,7 +70,6 @@ public class CleaningServiceImpTest {
         assertNotNull(resultPage);
         assertEquals(cleaningResponsePage, resultPage);
 
-        // Исправленная строка: приведение Mockito.any() к Specification<Cleaning>
         verify(cleaningRepository, times(1)).findAll(Mockito.any(Specification.class), Mockito.eq(pageRequest));
         verify(cleaningMapper, times(1)).toResponsePage(cleaningPage);
     }
@@ -88,7 +86,6 @@ public class CleaningServiceImpTest {
         Page<Cleaning> cleaningPage = new PageImpl<>(List.of(createCleaning(1L, "Уборка 1"), createCleaning(2L, "Уборка 2")), pageRequest, 2);
         Page<CleaningResponse> cleaningResponsePage = new PageImpl<>(List.of(createCleaningResponse(1L, "Уборка 1"), createCleaningResponse(2L, "Уборка 2")), pageRequest, 2);
 
-        // Исправленная строка: приведение Mockito.any() к Specification<Cleaning>
         when(cleaningRepository.findAll(Mockito.any(Specification.class), Mockito.eq(pageRequest))).thenReturn(cleaningPage);
         when(cleaningMapper.toResponsePage(cleaningPage)).thenReturn(cleaningResponsePage);
 
@@ -97,7 +94,6 @@ public class CleaningServiceImpTest {
         assertNotNull(resultPage);
         assertEquals(cleaningResponsePage, resultPage);
 
-        // Исправленная строка: приведение Mockito.any() к Specification<Cleaning>
         verify(cleaningRepository, times(1)).findAll(Mockito.any(Specification.class), Mockito.eq(pageRequest));
         verify(cleaningMapper, times(1)).toResponsePage(cleaningPage);
     }
@@ -146,7 +142,7 @@ public class CleaningServiceImpTest {
     void getServiceResponseById_ServiceNotFound_ShouldReturnNull() {
         Long serviceId = 1L;
         when(cleaningRepository.findById(serviceId)).thenReturn(Optional.empty());
-        when(cleaningMapper.toResponse(null)).thenReturn(null); // Важно замокировать mapper для null
+        when(cleaningMapper.toResponse(null)).thenReturn(null);
 
         CleaningResponse result = cleaningService.getServiceResponseById(serviceId);
 
@@ -187,7 +183,7 @@ public class CleaningServiceImpTest {
 
         verify(cleaningMapper, times(1)).toEntity(cleaningRequest);
         verify(cleaningRepository, times(1)).save(cleaningToSave);
-        verifyNoMoreInteractions(cleaningMapper); // Проверяем, что toResponse не вызывался
+        verifyNoMoreInteractions(cleaningMapper);
     }
 
     @Test
@@ -316,8 +312,6 @@ public class CleaningServiceImpTest {
         verify(cleaningRepository, times(1)).findById(cleaningId);
     }
 
-
-    // Helper methods for creating test data
     private Cleaning createCleaning(Long id, String name) {
         Cleaning cleaning = new Cleaning();
         cleaning.setId(id);
