@@ -37,23 +37,18 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/cleonoraadmin-miahkykh:latest
 
-      - name: Restart CleonoraAdmin container
+      - name: Deploy with Docker Compose
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            echo "Restarting CleonoraAdmin container"
-            docker stop cleonoraadmin-miahkykh || true
-            docker rm cleonoraadmin-miahkykh || true
-            docker run -d \
-              --name cleonoraadmin-miahkykh \
-              -p 7648:8080 \
-              --net cleonoraadmin-miahkykh \
-              -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql-cleonora:5432/cleonora_database \
-              -e SPRING_DATASOURCE_USERNAME=postgres \
-              -e SPRING_DATASOURCE_PASSWORD=0000 \
-              ${{ secrets.DOCKER_USERNAME }}/cleonoraadmin-miahkykh:latest
-            echo "CleonoraAdmin container has been updated"
-            exit
+            echo "Deploying CleonoraAdmin with Docker Compose"
+            docker-compose -v || (echo "Docker Compose is not installed. Please install it." && exit 1)
+            docker -v || (echo "Docker is not installed. Please install it." && exit 1)
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/tmp/docker-compose.yml docker-compose.yml
+            docker compose -f /tmp/docker-compose.yml pull
+            docker compose -f /tmp/docker-compose.yml up -d
+            rm -f /tmp/docker-compose.yml
+            echo "CleonoraAdmin has been deployed"
