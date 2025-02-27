@@ -1,4 +1,4 @@
-name: Build and push CleanoraAdmin image and restart containers
+name: Build and push coffeeapp image and restart containers
 on:
   push:
     branches: [ "main" ]
@@ -35,20 +35,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/cleonoraadmin-miahkykh:latest
-
-      - name: Deploy with Docker Compose
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            echo "Deploying CleonoraAdmin with Docker Compose"
-            docker-compose -v || (echo "Docker Compose is not installed. Please install it." && exit 1)
-            docker -v || (echo "Docker is not installed. Please install it." && exit 1)
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/tmp/docker-compose.yml docker-compose.yml
-            docker compose -f /tmp/docker-compose.yml pull
-            docker compose -f /tmp/docker-compose.yml up -d
-            rm -f /tmp/docker-compose.yml
-            echo "CleonoraAdmin has been deployed"
+          tags: ${{ secrets.DOCKER_USERNAME }}/coffeeapp-miahkykh:latest
