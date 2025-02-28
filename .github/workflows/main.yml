@@ -35,4 +35,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/coffeeapp-miahkykh:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
