@@ -11,7 +11,7 @@ spring:
     name: Cleonora
 
   datasource:
-    url: jdbc:postgresql://cleonora-db:5432/postgres
+    url: jdbc:postgresql://cleonora-db:5422/postgres
     username: postgres
     password: "0000"
 
