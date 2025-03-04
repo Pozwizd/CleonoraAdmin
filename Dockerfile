@@ -1,5 +1,5 @@
 
-FROM mcr.microsoft.com/openjdk/jdk:17-windowsservercore-ltsc2022
+FROM mcr.microsoft.com/openjdk/jdk:17-jdk
 
 WORKDIR /app
 
