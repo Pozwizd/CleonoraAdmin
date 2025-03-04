@@ -1,7 +1,9 @@
-name: Build and push coffeeapp image and restart containers
+name: Build and push CleonoraAdmin image and restart containers
+
 on:
   push:
     branches: [ "main" ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,3 +38,50 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
+
+      - name: SSH Restart PostgreSQL container (Linux)
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            docker network ls | findstr "cleonora-network" > nul || docker network create cleonora-network
+            echo "Restarting PostgreSQL container"
+
+            docker stop cleonora-db || echo "PostgreSQL container not running"
+            docker rm cleonora-db || echo "PostgreSQL container not found"
+            docker pull postgres:latest
+            docker run -d \
+              --name cleonora-db \
+              --net cleonora-network \
+              -e POSTGRES_PASSWORD=0000 \
+              -e POSTGRES_DB=postgres \
+              -p 5432:5432 \
+              postgres:latest
+            echo "PostgreSQL container has been updated"
+
+      - name: SSH Restart CleonoraAdmin container (Linux)
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            docker network ls | findstr "cleonora-network" > nul || docker network create cleonora-network
+            echo "Restarting CleonoraAdmin container"
+
+            docker stop cleonora-admin || echo "CleonoraAdmin container not running"
+            docker rm cleonora-admin || echo "CleonoraAdmin xcontainer not found"
+            docker pull ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
+            docker run -d \
+              --name cleonora-admin \
+              --net cleonora-network \
+              -p 7940:8081 \
+              -e SPRING_DATASOURCE_URL=jdbc:postgresql://cleonora-db:5432/postgres \
+              -e SPRING_DATASOURCE_USERNAME=postgres \
+              -e SPRING_DATASOURCE_PASSWORD=0000 \
+              ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
+            echo "CleonoraAdmin container has been updated"
