@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
 
       - name: Build app with Gradle
         run: |
-          ./gradlew build -x test
+          .\gradlew build -x test
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -47,19 +47,13 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            docker network ls | grep "cleonora-network" > /dev/null || docker network create cleonora-network
+            docker network ls | findstr "cleonora-network" > nul || docker network create cleonora-network
             echo "Restarting PostgreSQL container"
 
             docker stop cleonora-db || echo "PostgreSQL container not running"
             docker rm cleonora-db || echo "PostgreSQL container not found"
             docker pull postgres:latest
-            docker run -d \
-              --name cleonora-db \
-              --net cleonora-network \
-              -e POSTGRES_PASSWORD=0000 \
-              -e POSTGRES_DB=postgres \
-              -p 5432:5432 \
-              postgres:latest
+            docker run -d --name cleonora-db --net cleonora-network -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=postgres -p 5432:5432 postgres:latest
             echo "PostgreSQL container has been updated"
 
       - name: SSH Restart CleonoraAdmin container
@@ -70,18 +64,11 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            docker network ls | grep "cleonora-network" > /dev/null || docker network create cleonora-network
+            docker network ls | findstr "cleonora-network" > nul || docker network create cleonora-network
             echo "Restarting CleonoraAdmin container"
 
             docker stop cleonora-admin || echo "CleonoraAdmin container not running"
-            docker rm cleonora-admin || echo "CleonoraAdmin xcontainer not found"
+            docker rm cleonora-admin || echo "CleonoraAdmin container not found"
             docker pull ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
-            docker run -d \
-              --name cleonora-admin \
-              --net cleonora-network \
-              -p 7940:8081 \
-              -e SPRING_DATASOURCE_URL=jdbc:postgresql://cleonora-db:5432/postgres \
-              -e SPRING_DATASOURCE_USERNAME=postgres \
-              -e SPRING_DATASOURCE_PASSWORD=0000 \
-              ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
+            docker run -d --name cleonora-admin --net cleonora-network -p 7940:8081 -e SPRING_DATASOURCE_URL=jdbc:postgresql://cleonora-db:5432/postgres -e SPRING_DATASOURCE_USERNAME=postgres -e SPRING_DATASOURCE_PASSWORD=0000 ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
             echo "CleonoraAdmin container has been updated"
