@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            docker network ls | findstr "cleonora-network" > nul || docker network create cleonora-network
+            docker network ls | grep "cleonora-network" > /dev/null || docker network create cleonora-network
             echo "Restarting PostgreSQL container"
 
             docker stop cleonora-db || echo "PostgreSQL container not running"
@@ -70,7 +70,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            docker network ls | findstr "cleonora-network" > nul || docker network create cleonora-network
+            docker network ls | grep "cleonora-network" > /dev/null || docker network create cleonora-network
             echo "Restarting CleonoraAdmin container"
 
             docker stop cleonora-admin || echo "CleonoraAdmin container not running"
