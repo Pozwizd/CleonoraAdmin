@@ -39,7 +39,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
 
-      - name: SSH Restart PostgreSQL container (Linux)
+      - name: SSH Restart PostgreSQL container
         uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -62,7 +62,7 @@ jobs:
               postgres:latest
             echo "PostgreSQL container has been updated"
 
-      - name: SSH Restart CleonoraAdmin container (Linux)
+      - name: SSH Restart CleonoraAdmin container
         uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.SSH_HOST }}
