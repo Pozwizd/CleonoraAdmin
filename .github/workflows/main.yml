@@ -1,12 +1,10 @@
-name: Build and push CleonoraAdmin image and restart containers
-
+name: Build and push coffeeapp image and restart containers
 on:
   push:
     branches: [ "main" ]
-
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +18,7 @@ jobs:
 
       - name: Build app with Gradle
         run: |
-          .\gradlew build -x test
+          ./gradlew build -x test
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -28,16 +26,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Install Docker Buildx
-        run: |
-          mkdir -p $HOME/.docker/cli-plugins
-          curl -Lo $HOME/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/v0.21.2/buildx-v0.21.2-win64
-          chmod +x $HOME/.docker/cli-plugins/docker-buildx
-
       - name: Set up Docker Buildx
-        run: |
-          docker buildx create
-          docker buildx use default 
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push CleonoraAdmin image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
 
 
       - name: Build and push CleonoraAdmin image
