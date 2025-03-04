@@ -1,5 +1,5 @@
 
-FROM mcr.microsoft.com/openjdk/jdk:17-jdk
+FROM mcr.microsoft.com/devcontainers/java:dev-17
 
 WORKDIR /app
 
