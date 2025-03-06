@@ -19,7 +19,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        default_schema: cleonora_database
+        default_schema: public
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: create-drop

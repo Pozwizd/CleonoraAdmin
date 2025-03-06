@@ -53,7 +53,6 @@ jobs:
             docker pull postgres:latest
             docker run -d --name cleonora-db --net cleonora-network -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=postgres -p 5440:5432 postgres:latest
             echo "PostgreSQL container has been updated"
-            docker exec cleonora-db psql -U postgres -d postgres -c "CREATE DATABASE cleonora_database;"
 
       - name: SSH Restart CleonoraAdmin container
         uses: appleboy/ssh-action@v1.2.1
