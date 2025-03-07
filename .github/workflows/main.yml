@@ -35,19 +35,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: romanmiahkykh/cleonora-admin:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
 
-      - name: Copy docker-compose.yml to remote server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: 22
-          source: "docker-compose.yml"
-          target: "/home/slj/projects/Cleonora-R.Miahkykh"
-
-      - name: SSH Deploy with Docker Compose
+      - name: SSH Restart PostgreSQL container
         uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -55,7 +45,34 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
+            docker network ls | grep -q "cleonora-network" || docker network create cleonora-network
+            echo "Restarting PostgreSQL container"
+
+            docker stop cleonora-db || echo "PostgreSQL container not running"
+            docker rm cleonora-db || echo "PostgreSQL container not found"
+            docker pull postgres:latest
+            docker run -d --name cleonora-db --net cleonora-network -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=postgres -p 5440:5432 postgres:latest
+            echo "PostgreSQL container has been updated"
+
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          source: docker-compose.yml
+          target: /home/slj/projects/CleonoraApp-R.Miahkykh
+
+      - name: SSH Restart CleonoraAdmin container
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            docker network ls | grep -q "cleonora-network" || docker network create cleonora-network
             cd /home/slj/projects/CleonoraApp-R.Miahkykh
-            docker-compose pull
+            docker compose pull
             docker-compose up -d
-            echo "Application deployed with Docker Compose"
