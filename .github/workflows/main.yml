@@ -65,6 +65,12 @@ jobs:
             ls
             whoami
 
+      - name: Read docker-compose.yml content
+        run: |
+          echo "COMPOSE_CONTENT<<EOF" >> $GITHUB_ENV
+          cat docker-compose.yml >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: SSH create docker-compose.yml
         uses: appleboy/ssh-action@v1.2.1
         with:
@@ -73,9 +79,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            ls -l
-            ls -l .github/workflows
-            cat docker-compose.yml | tee /home/slj/projects/CleonoraApp-R.Miahkykh/docker-compose.yml
+            echo "$COMPOSE_CONTENT" | tee /home/slj/projects/CleonoraApp-R.Miahkykh/docker-compose.yml
 
       - name: SSH Restart CleonoraAdmin container
         uses: appleboy/ssh-action@v1.2.1
