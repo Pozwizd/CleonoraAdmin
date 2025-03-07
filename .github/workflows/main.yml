@@ -85,7 +85,7 @@ jobs:
             sudo echo "      POSTGRES_PASSWORD: \"0000\"" >> docker-compose.yml
             sudo echo "      POSTGRES_DB: postgres" >> docker-compose.yml
             sudo echo "    ports:" >> docker-compose.yml
-            sudo echo "      - \"5440:5432\"" >> docker-compose.yml
+            sudo echo "      - \"5441:5432\"" >> docker-compose.yml
             sudo echo "    networks:" >> docker-compose.yml
             sudo echo "      - cleonora-network" >> docker-compose.yml
             sudo echo "    volumes:" >> docker-compose.yml
