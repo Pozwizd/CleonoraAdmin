@@ -65,11 +65,9 @@ jobs:
             ls
             whoami
 
-      - name: Read docker-compose.yml content
+      - name: Write docker-compose.yml to temp file
         run: |
-          echo "COMPOSE_CONTENT<<EOF" >> $GITHUB_ENV
-          cat docker-compose.yml >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          cat docker-compose.yml > temp_compose.yml
 
       - name: SSH create docker-compose.yml
         uses: appleboy/ssh-action@v1.2.1
@@ -79,7 +77,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            printf '%s\n' "$COMPOSE_CONTENT" | sudo tee /home/slj/projects/CleonoraApp-R.Miahkykh/docker-compose.yml
+            cat temp_compose.yml | sudo tee /home/slj/projects/CleonoraApp-R.Miahkykh/docker-compose.yml
 
       - name: SSH Restart CleonoraAdmin container
         uses: appleboy/ssh-action@v1.2.1
