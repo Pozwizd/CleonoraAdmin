@@ -73,7 +73,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           source: docker-compose.yml
-          target: /projects/CleonoraApp-R.Miahkykh
+          target: /home/slj/projects/CleonoraApp-R.Miahkykh
 
       - name: SSH Restart CleonoraAdmin container
         uses: appleboy/ssh-action@v1.2.1
