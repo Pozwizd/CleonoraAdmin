@@ -73,7 +73,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            cd /home/slj/projects/CleonoraApp-R.Miahkykh
+            cd /projects/CleonoraApp-R.Miahkykh
             sudo rm -f docker-compose.yml
             sudo echo "version: '3.8'" >> docker-compose.yml
             sudo echo "" >> docker-compose.yml
@@ -120,6 +120,6 @@ jobs:
           port: 22
           script: |
             docker network ls | grep -q "cleonora-network" || docker network create cleonora-network
-            cd /home/slj/projects/CleonoraApp-R.Miahkykh
+            cd /projects/CleonoraApp-R.Miahkykh
             docker compose pull
             docker-compose up -d
