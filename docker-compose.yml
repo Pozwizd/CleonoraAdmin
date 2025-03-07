@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  cleonora-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "0000"
+      POSTGRES_DB: postgres
+    ports:
+      - "5440:5432"
+    networks:
+      - cleonora-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   cleonora-admin:
     image: glyuchnoglaz21/cleonora-miahkykh:latest
     ports:
@@ -14,15 +26,6 @@ services:
       - cleonora-network
     depends_on:
       - cleonora-db
-
-  cleonora-db:
-    image: postgres:latest
-    environment:
-      POSTGRES_PASSWORD: 0000
-    networks:
-      - cleonora-network
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
 networks:
   cleonora-network:

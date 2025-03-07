@@ -37,6 +37,22 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
 
+#      - name: SSH Restart PostgreSQL container
+#        uses: appleboy/ssh-action@v1.2.1
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          password: ${{ secrets.SSH_PASSWORD }}
+#          port: 22
+#          script: |
+#            docker network ls | grep -q "cleonora-network" || docker network create cleonora-network
+#            echo "Restarting PostgreSQL container"
+#
+#            docker stop cleonora-db || echo "PostgreSQL container not running"
+#            docker rm cleonora-db || echo "PostgreSQL container not found"
+#            docker pull postgres:latest
+#            docker run -d --name cleonora-db --net cleonora-network -e POSTGRES_PASSWORD=0000 -e POSTGRES_DB=postgres -p 5440:5432 postgres:latest
+#            echo "PostgreSQL container has been updated"
 
       - name: SSH test
         uses: appleboy/ssh-action@v1.2.1
@@ -47,4 +63,27 @@ jobs:
           port: 22
           script: |
             ls
+            whoami
 
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          source: docker-compose.yml
+          target: /projects/CleonoraApp-R.Miahkykh
+
+      - name: SSH Restart CleonoraAdmin container
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            docker network ls | grep -q "cleonora-network" || docker network create cleonora-network
+            cd /projects/CleonoraApp-R.Miahkykh
+            docker compose pull
+            docker-compose up -d
