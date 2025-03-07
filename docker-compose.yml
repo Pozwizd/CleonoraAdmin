@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  cleonora-db:
+    image: postgres:latest
+    container_name: cleonora-db
+    networks:
+      - cleonora-network
+    environment:
+      POSTGRES_PASSWORD: 0000
+      POSTGRES_DB: postgres
+    ports:
+      - "5440:5432"
+
+  cleonora-admin:
+    image: ${{ secrets.DOCKER_USERNAME }}/cleonora-miahkykh:latest
+    container_name: cleonora-admin
+    networks:
+      - cleonora-network
+    environment:
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cleonora-db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 0000
+    ports:
+      - "7940:8080"
+    depends_on:
+      - cleonora-db
+
+networks:
+  cleonora-network:
+    driver: bridge
