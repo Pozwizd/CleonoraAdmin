@@ -121,5 +121,6 @@ jobs:
           script: |
             docker network ls | grep -q "cleonora-network" || docker network create cleonora-network
             cd /projects/CleonoraApp-R.Miahkykh
+            docker compose down
             docker compose pull
             docker-compose up -d
