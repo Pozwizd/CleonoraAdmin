@@ -79,7 +79,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            echo "$COMPOSE_CONTENT" | sudo tee /home/slj/projects/CleonoraApp-R.Miahkykh/docker-compose.yml
+            printf '%s\n' "$COMPOSE_CONTENT" | sudo tee /home/slj/projects/CleonoraApp-R.Miahkykh/docker-compose.yml
 
       - name: SSH Restart CleonoraAdmin container
         uses: appleboy/ssh-action@v1.2.1
