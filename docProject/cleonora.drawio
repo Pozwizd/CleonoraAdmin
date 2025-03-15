@@ -1,6 +1,6 @@
-<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2025-02-14T13:28:56.550Z" etag="h9_PrvNuwHolb2k_s-kf" version="22.1.22" type="embed" pages="6">
+<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2025-03-14T10:38:22.252Z" etag="bTaVaUc3BFIJKflh0orW" version="22.1.22" type="embed" pages="6">
   <diagram id="-M70ZQ5THjiVGe51k4Sj" name="Архитектура">
-    <mxGraphModel dx="1818" dy="1953" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1874" dy="1908" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -79,7 +79,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Схема Бд" id="eeOjVwrg2yOWO5tktWRo">
-    <mxGraphModel dx="4133" dy="8321" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3528" dy="7753" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="nQ5mYFtjbLair1mEaDeZ-0" />
         <mxCell id="nQ5mYFtjbLair1mEaDeZ-1" parent="nQ5mYFtjbLair1mEaDeZ-0" />
@@ -3126,7 +3126,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="PkhjohjCOImW8Kt1HvkT" name="КлассыКлиент">
-    <mxGraphModel dx="1818" dy="1953" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1874" dy="1908" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
